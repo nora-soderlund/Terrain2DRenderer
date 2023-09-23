@@ -1,6 +1,6 @@
 import { Point } from "../../types/Point";
 
-export default class TerrainCanvasMouseEvents {
+export default class GameCanvasMouseEvents {
     constructor(private readonly element: HTMLCanvasElement) {
         this.element.addEventListener("mousedown", this.mousedown.bind(this));
     }

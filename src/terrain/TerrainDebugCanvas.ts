@@ -2,7 +2,7 @@ import { Point } from "../types/Point";
 import TerrainGridRenderer from "./renderers/TerrainGridRenderer";
 import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
 import TerrainWaterRenderer from "./renderers/TerrainWaterRenderer";
-import TerrainCanvasMouseEvents from "./events/TerrainCanvasMouseEvents";
+import TerrainCanvasMouseEvents from "../game/events/GameCanvasMouseEvents";
 
 export default class TerrainDebugCanvas {
     public readonly element = document.createElement("canvas");

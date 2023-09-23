@@ -1,28 +1,30 @@
 import { Direction } from "../types/Direction";
 import { Point } from "../types/Point";
-import TerrainCanvasMouseEvents from "./events/TerrainCanvasMouseEvents";
+import TerrainCanvasMouseEvents from "../game/events/GameCanvasMouseEvents";
 import TerrainGrid from "./TerrainGrid";
 import TerrainGridRenderer from "./renderers/TerrainGridRenderer";
 import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
 import TerrainWaterRenderer from "./renderers/TerrainWaterRenderer";
 import TerrainTiles from "./TerrainTiles";
+import GameCanvasEntity from "../game/types/GameCanvasEntity";
 
-export default class TerrainCanvas {
+export default class TerrainCanvas implements GameCanvasEntity {
     public readonly element = document.createElement("canvas");
 
-    private offset: Point = {
-        left: 0,
-        top: 0
+    private readonly rows: number;
+    private readonly columns: number;
+
+    constructor(private readonly tiles: TerrainTiles[], private readonly size: number) {
+        this.rows = Math.max(...tiles.map((tiles) => tiles.grid.rows));
+        this.columns = Math.max(...tiles.map((tiles) => tiles.grid.columns));
+
+        this.render();
     };
 
-    private readonly mouseEvents = new TerrainCanvasMouseEvents(this.element);
-
-    private readonly tiles: TerrainTiles;
-
-    constructor(private readonly grid: TerrainGrid, private readonly size: number) {
-        this.tiles = new TerrainTiles(grid);
-
-        this.requestRender();
+    public draw(context: CanvasRenderingContext2D, offset: Point): void {
+        context.drawImage(this.element,
+            0, 0, this.element.width, this.element.height,
+            offset.left, offset.top, this.element.width, this.element.height);
     };
 
     private requestRender() {
@@ -30,33 +32,35 @@ export default class TerrainCanvas {
     };
 
     private render() {
-        const bounds = this.element.getBoundingClientRect();
+        this.element.width = this.columns * this.size;
+        this.element.height = this.rows * this.size;
 
-        this.element.width = bounds.width;
-        this.element.height = bounds.height;
-
-        this.offset.left = this.mouseEvents.offset.left + Math.floor(this.element.width / 2) - Math.floor((this.grid.columns * this.size) / 2);
-        this.offset.top = this.mouseEvents.offset.top + Math.floor(this.element.height / 2) - Math.floor((this.grid.rows * this.size) / 2);
+        //this.offset.left =  - Math.floor((this.tiles.grid.columns * this.size) / 2);
+        //this.offset.top =  - Math.floor((this.tiles.grid.rows * this.size) / 2);
 
         const context = this.element.getContext("2d")!;
 
+        const offset = {
+            left: 0,
+            top: 0
+        };
 
         const terrainWaterRenderer = new TerrainWaterRenderer(context);
         terrainWaterRenderer.drawWater();
 
-        const terrainGridRenderer = new TerrainGridRenderer(context, this.size, this.offset);
+        const terrainGridRenderer = new TerrainGridRenderer(context, this.size, offset);
         terrainGridRenderer.drawGrid();
 
-        const terrainTileRenderer = new TerrainTileRenderer(context, this.size, this.offset);
-        
-        for(let tileDefinition of this.tiles.definitions) {
-            terrainTileRenderer.draw(tileDefinition.type, tileDefinition.row, tileDefinition.column, tileDefinition.direction);
-        }
+        const terrainTileRenderer = new TerrainTileRenderer(context, this.size, offset);
 
-        for(let tileDefinition of this.tiles.definitions) {
-            terrainTileRenderer.drawDebugArrow(tileDefinition.row, tileDefinition.column, tileDefinition.direction);
-        }
+        for(let tiles of this.tiles) {
+            for(let tileDefinition of tiles.definitions) {
+                terrainTileRenderer.draw(tileDefinition.type, tileDefinition.row, tileDefinition.column, tileDefinition.direction);
+            }
 
-        this.requestRender();
+            for(let tileDefinition of tiles.definitions) {
+                terrainTileRenderer.drawDebugArrow(tileDefinition.row, tileDefinition.column, tileDefinition.direction);
+            }
+        }
     };
 };

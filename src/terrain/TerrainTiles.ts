@@ -6,7 +6,7 @@ import { TerrainTileType } from "./types/TerrainTileType";
 export default class TerrainTiles {
     public readonly definitions: TerrainTileDefinition[];
 
-    constructor(private readonly grid: TerrainGrid) {
+    constructor(public readonly grid: TerrainGrid) {
         this.definitions = this.getTiles();
     }
 
