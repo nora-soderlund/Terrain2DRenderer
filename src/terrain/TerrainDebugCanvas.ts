@@ -1,10 +1,8 @@
-import { Direction } from "../types/Direction";
 import { Point } from "../types/Point";
-import TerrainCanvasMouseEvents from "./TerrainCanvasMouseEvents";
-import TerrainGrid from "./TerrainGrid";
-import TerrainGridRenderer from "./TerrainGridRenderer";
-import TerrainRenderer from "./TerrainRenderer";
-import TerrainWaterRenderer from "./TerrainWaterRenderer";
+import TerrainGridRenderer from "./renderers/TerrainGridRenderer";
+import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
+import TerrainWaterRenderer from "./renderers/TerrainWaterRenderer";
+import TerrainCanvasMouseEvents from "./events/TerrainCanvasMouseEvents";
 
 export default class TerrainDebugCanvas {
     public readonly element = document.createElement("canvas");
@@ -30,7 +28,7 @@ export default class TerrainDebugCanvas {
         this.element.width = bounds.width;
         this.element.height = bounds.height;
 
-        this.offset.left = this.mouseEvents.offset.left + 100;
+        this.offset.left = this.mouseEvents.offset.left + -1300;
         this.offset.top = this.mouseEvents.offset.top;
 
         const context = this.element.getContext("2d")!;
@@ -42,23 +40,29 @@ export default class TerrainDebugCanvas {
         const terrainGridRenderer = new TerrainGridRenderer(context, this.size, this.offset);
         terrainGridRenderer.drawGrid();
 
-        const terrainRenderer = new TerrainRenderer(context, this.size, this.offset);
+        const terrainTileRenderer = new TerrainTileRenderer(context, this.size, this.offset);
 
         for(let direction = 0; direction < 4; direction++) {
-            terrainRenderer.drawFlatTile(1 + (direction * 2), 0, direction * 90);
-            terrainRenderer.drawFlatTileWithFlatEdge(1 + (direction * 2), 2, direction * 90);
+            for(let index = 0; index < 14; index += 2)
+                terrainTileRenderer.drawFlatTile(1 + (direction * 2), index, direction * 90);
+    
+            terrainTileRenderer.drawFlatTileWithLeftFlatEdge(1 + (direction * 2), 2, direction * 90);
+            terrainTileRenderer.drawFlatTileWithRightFlatEdge(1 + (direction * 2), 4, direction * 90);
             
-            terrainRenderer.drawFlatTileWithRightInsideCornerEdge(1 + (direction * 2), 4, direction * 90);
+            terrainTileRenderer.drawFlatTileWithLeftInsideCornerEdge(1 + (direction * 2), 6, direction * 90);
+            terrainTileRenderer.drawFlatTileWithRightInsideCornerEdge(1 + (direction * 2), 8, direction * 90);
             
-            terrainRenderer.drawFlatTileWithLeftOutsideCornerEdge(1 + (direction * 2), 6, direction * 90);
-            terrainRenderer.drawFlatTileWithRightOutsideCornerEdge(1 + (direction * 2), 8, direction * 90);
-            terrainRenderer.drawFlatTileWithOutsideCornerEdge(1 + (direction * 2), 10, direction * 90);
+            terrainTileRenderer.drawFlatTileWithLeftOutsideCornerEdge(1 + (direction * 2), 10, direction * 90);
+            terrainTileRenderer.drawFlatTileWithRightOutsideCornerEdge(1 + (direction * 2), 12, direction * 90);
 
-            terrainRenderer.drawSlopedTileWithFlatEdge(1 + (direction * 2), 12, (direction * 90) + 45);
+            for(let index = 14; index < 24; index += 2)
+                terrainTileRenderer.drawSlopedTile(1 + (direction * 2), index, (direction * 90) + 45);
 
-            terrainRenderer.drawSlopedTileWithOutsideCornerEdge(1 + (direction * 2), 14, (direction * 90) + 45);
-            terrainRenderer.drawSlopedTileWithLeftOutsideCornerEdge(1 + (direction * 2), 16, (direction * 90) + 45);
-            terrainRenderer.drawSlopedTileWithRightOutsideCornerEdge(1 + (direction * 2), 18, (direction * 90) + 45);
+            terrainTileRenderer.drawSlopedTileWithLeftFlatEdge(1 + (direction * 2), 16, (direction * 90) + 45);
+            terrainTileRenderer.drawSlopedTileWithRightFlatEdge(1 + (direction * 2), 18, (direction * 90) + 45);
+
+            terrainTileRenderer.drawSlopedTileWithLeftOutsideCornerEdge(1 + (direction * 2), 20, (direction * 90) + 45);
+            terrainTileRenderer.drawSlopedTileWithRightOutsideCornerEdge(1 + (direction * 2), 22, (direction * 90) + 45);
         }
 
         this.requestRender();

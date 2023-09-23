@@ -1,251 +1,116 @@
 import { Direction } from "../types/Direction";
-import { TerrainGridItem } from "../types/TerrainGridItem";
-import { TerrainGridItemWithAngle } from "../types/TerrainGridItemWithAngle";
 
 export default class TerrainGrid {
-    public readonly pattern: number[][];
     public readonly rows: number;
     public readonly columns: number;
 
-    constructor(pattern: number[][]) {
-        this.pattern = pattern;
-        this.rows = this.pattern.length;
-        this.columns = Math.max(...this.pattern.map((row) => row.length));
-    }
-
-    public isNorthTileWater(row: number, column: number) {
-        return (!this.pattern[row - 1] || !this.pattern[row - 1][column]);
-    }
-
-    public isEastTileWater(row: number, column: number) {
-        return (!this.pattern[row] || !this.pattern[row][column + 1]);
-    }
-
-    public isWestTileWater(row: number, column: number) {
-        return (!this.pattern[row] || !this.pattern[row][column - 1]);
-    }
-
-    public isSouthTileWater(row: number, column: number) {
-        return (!this.pattern[row + 1] || !this.pattern[row + 1][column]);
-    }
-
-    public getTiles() {
-        const items: TerrainGridItem[] = [];
-
-        for(let row = 0; row < this.rows; row++)
-        for(let column = 0; column < this.pattern[row].length; column++) {
-            if(!this.pattern[row][column])
+    constructor(private readonly map: number[][]) {
+        for(let row = 0; row < this.map.length; row++)
+        for(let column = 0; column < this.map[row].length; column++) {
+            if(!this.isTileWater(row, column))
                 continue;
 
-            items.push({
-                row,
-                column,
-                direction: Direction.North
-            });
-        }
+            for(let direction = 0; direction < 360; direction += 90) {
+                if(this.isTileByDirectionFlat(row, column, direction + Direction.East))
+                    continue;
 
-        return items;
-    }
+                if(!this.isTileByDirectionFlat(row, column, direction + Direction.South))
+                    continue;
 
-    public getInnerEdgeCorners() {
-        const items: TerrainGridItem[] = [];
+                if(!this.isTileByDirectionFlat(row, column, direction + Direction.West))
+                    continue;
 
-        for(let row = 0; row < this.rows; row++)
-        for(let column = 0; column < this.pattern[row].length; column++) {
-            if(this.pattern[row][column])
-                continue;
-
-            if(!this.isSouthTileWater(row, column) && !this.isEastTileWater(row, column)) {
-                items.push({
-                    row: row + 1,
-                    column: column + 1,
-                    direction: Direction.NorthWest
-                });
-            }
-
-            if(!this.isSouthTileWater(row, column) && !this.isWestTileWater(row, column)) {
-                items.push({
-                    row: row + 1,
-                    column: column - 1,
-                    direction: Direction.NorthEast
-                });
-            }
-
-            if(!this.isNorthTileWater(row, column) && !this.isEastTileWater(row, column)) {
-                items.push({
-                    row: row - 1,
-                    column: column + 1,
-                    direction: Direction.SouthWest
-                });
-            }
-
-            if(!this.isNorthTileWater(row, column) && !this.isWestTileWater(row, column)) {
-                items.push({
-                    row: row - 1,
-                    column: column - 1,
-                    direction: Direction.SouthEast
-                });
-            }
-        }
-
-        return items;
-    }
-
-    public getOuterEdges() {
-        const items: TerrainGridItem[] = [];
-        const connectors: TerrainGridItem[] = [];
-
-        for(let row = 0; row < this.rows; row++)
-        for(let column = 0; column < this.pattern[row].length; column++) {
-            if(!this.pattern[row][column])
-                continue;
-
-            if(this.isNorthTileWater(row, column)) {
-                if(this.isWestTileWater(row - 1, column) || !this.isEastTileWater(row - 1, column)) {
-                    items.push({
-                        row: row - 1,
-                        column,
-                        direction: Direction.North
-                    });
-
-                    if(!this.isEastTileWater(row, column) && this.isEastTileWater(row - 1, column)) {
-                        connectors.push({
-                            row: row - 1,
-                            column,
-                            direction: Direction.North
-                        });
-                    }
-                }
-            }
-
-            if(this.isSouthTileWater(row, column)) {
-                items.push({
-                    row: row + 1,
-                    column,
-                    direction: Direction.South
-                });
-
-                if(!this.isWestTileWater(row, column) && this.isWestTileWater(row + 1, column)) {
-                    connectors.push({
-                        row: row + 1,
-                        column,
-                        direction: Direction.South
-                    });
-                }
-            }
-
-            if(this.isEastTileWater(row, column)) {
-                if(this.isEastTileWater(row + 1, column) || !this.isEastTileWater(row, column + 1)) {
-                    items.push({
-                        row,
-                        column: column + 1,
-                        direction: Direction.East
-                    });
-
-                    if(!this.isSouthTileWater(row, column) && this.isEastTileWater(row + 1, column)) {
-                        connectors.push({
-                            row,
-                            column: column + 1,
-                            direction: Direction.East
-                        });
-                    }
-                }
-                else {
-                    items.push({
-                        row,
-                        column: column + 1,
-                        direction: Direction.NorthEast
-                    });
-                }
-            }
-            
-            if(this.isWestTileWater(row, column)) {
-                items.push({
-                    row,
-                    column: column - 1,
-                    direction: Direction.West
-                });
+                if(this.isTileByDirectionFlat(row, column, direction + Direction.North))
+                    continue;
                 
-                if(!this.isNorthTileWater(row, column) && this.isNorthTileWater(row, column - 1)) {
-                    connectors.push({
-                        row,
-                        column: column - 1,
-                        direction: Direction.West
-                    });
-                }
+                this.map[row][column] = 255;
+
+                console.log("found slope at " + row + " x " + column + " at direction " + direction);
+                
+                break;
             }
         }
+
+        this.rows = this.map.length;
+        this.columns = Math.max(...this.map.map((row) => row.length));
+    }
+
+    private getOffsetByDirection(direction: Direction) {
+        while(direction >= 360)
+            direction -= 360;
+
+        while(direction < 0)
+            direction += 360;
+
+        switch(direction) {
+            case Direction.North:
+                return { row: -1, column: 0 };
+
+            case Direction.NorthEast:
+                return { row: -1, column: 1 };
+
+            case Direction.East:
+                return { row: 0, column: 1 };
+
+            case Direction.SouthEast:
+                return { row: 1, column: 1 };
+
+            case Direction.South:
+                return { row: 1, column: 0 };
+
+            case Direction.SouthWest:
+                return { row: 1, column: -1 };
+
+            case Direction.West:
+                return { row: 0, column: -1 };
+
+            case Direction.NorthWest:
+                return { row: -1, column: -1 };
+        }
+    }
+
+    public getTileByDirection(row: number, column: number, direction: Direction) {
+        const offsets = this.getOffsetByDirection(direction);
 
         return {
-            items,
-            connectors
+            row: row + offsets.row,
+            column: column + offsets.column
         };
-    };
+    }
 
+    public isTileByDirectionWater(row: number, column: number, direction: Direction) {
+        const coordinate = this.getTileByDirection(row, column, direction);
 
-    public getOuterEdgeCorners() {
-        const items: TerrainGridItemWithAngle[] = [];
+        return this.isTileWater(coordinate.row, coordinate.column);
+    }
 
-        for(let row = 0; row < this.rows; row++)
-        for(let column = 0; column < this.pattern[row].length; column++) {
-            if(!this.pattern[row][column])
-                continue;
+    public isTileWater(row: number, column: number) {
+        return (!this.map[row] || !this.map[row][column]);
+    }
 
-            if((this.isNorthTileWater(row, column)) && (this.isEastTileWater(row, column))) {
-                if(this.isEastTileWater(row - 1, column)) {
-                    if(!this.isSouthTileWater(row, column + 1) && this.isEastTileWater(row, column + 1)) {
-                        items.push({
-                            row: row - 1,
-                            column: column + 1,
-                            direction: Direction.NorthEast,
-                            angle: 45
-                        });
-                    }
-                    else {
-                        items.push({
-                            row: row - 1,
-                            column: column + 1,
-                            direction: Direction.NorthEast,
-                            angle: 90
-                        });
-                    }
-                }
-            }
+    public isTileFlat(row: number, column: number) {
+        if(this.isTileWater(row, column))
+            return false;
 
-            if((this.isNorthTileWater(row, column)) && (this.isWestTileWater(row, column))) {
-                if(this.isWestTileWater(row - 1, column)) {
-                    items.push({
-                        row: row - 1,
-                        column: column - 1,
-                        direction: Direction.NorthWest,
-                        angle: 90
-                    });
-                }
-            }
+        return this.map[row][column] !== 255;
+    }
 
-            if((this.isSouthTileWater(row, column)) && (this.isEastTileWater(row, column))) {
-                if(this.isEastTileWater(row + 1, column)) {
-                    items.push({
-                        row: row + 1,
-                        column: column + 1,
-                        direction: Direction.SouthEast,
-                        angle: 90
-                    });
-                }
-            }
+    public isTileByDirectionFlat(row: number, column: number, direction: Direction) {
+        const coordinate = this.getTileByDirection(row, column, direction);
 
-            if((this.isSouthTileWater(row, column)) && (this.isWestTileWater(row, column))) {
-                if(this.isWestTileWater(row + 1, column)) {
-                    items.push({
-                        row: row + 1,
-                        column: column - 1,
-                        direction: Direction.SouthWest,
-                        angle: 90
-                    });
-                }
-            }
-        }
+        return this.isTileFlat(coordinate.row, coordinate.column);
+    }
 
-        return items;
+    public isTileSlope(row: number, column: number) {
+        if(this.isTileWater(row, column))
+            return false;
+
+        return this.map[row][column] === 255;
+    }
+
+    public isTileByDirectionSlope(row: number, column: number, direction: Direction) {
+        const coordinate = this.getTileByDirection(row, column, direction);
+
+        return this.isTileSlope(coordinate.row, coordinate.column);
     }
 };

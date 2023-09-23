@@ -1,4 +1,4 @@
-import { Point } from "../types/Point";
+import { Point } from "../../types/Point";
 
 export default class TerrainGridRenderer {
     constructor(private readonly context: CanvasRenderingContext2D, private readonly size: number, private readonly offset: Point) {

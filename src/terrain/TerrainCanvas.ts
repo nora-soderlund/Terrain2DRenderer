@@ -1,10 +1,11 @@
 import { Direction } from "../types/Direction";
 import { Point } from "../types/Point";
-import TerrainCanvasMouseEvents from "./TerrainCanvasMouseEvents";
+import TerrainCanvasMouseEvents from "./events/TerrainCanvasMouseEvents";
 import TerrainGrid from "./TerrainGrid";
-import TerrainGridRenderer from "./TerrainGridRenderer";
-import TerrainRenderer from "./TerrainRenderer";
-import TerrainWaterRenderer from "./TerrainWaterRenderer";
+import TerrainGridRenderer from "./renderers/TerrainGridRenderer";
+import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
+import TerrainWaterRenderer from "./renderers/TerrainWaterRenderer";
+import TerrainTiles from "./TerrainTiles";
 
 export default class TerrainCanvas {
     public readonly element = document.createElement("canvas");
@@ -16,7 +17,11 @@ export default class TerrainCanvas {
 
     private readonly mouseEvents = new TerrainCanvasMouseEvents(this.element);
 
+    private readonly tiles: TerrainTiles;
+
     constructor(private readonly grid: TerrainGrid, private readonly size: number) {
+        this.tiles = new TerrainTiles(grid);
+
         this.requestRender();
     };
 
@@ -42,23 +47,14 @@ export default class TerrainCanvas {
         const terrainGridRenderer = new TerrainGridRenderer(context, this.size, this.offset);
         terrainGridRenderer.drawGrid();
 
-        const terrainRenderer = new TerrainRenderer(context, this.size, this.offset);
+        const terrainTileRenderer = new TerrainTileRenderer(context, this.size, this.offset);
+        
+        for(let tileDefinition of this.tiles.definitions) {
+            terrainTileRenderer.draw(tileDefinition.type, tileDefinition.row, tileDefinition.column, tileDefinition.direction);
+        }
 
-        for(let direction = 0; direction < 4; direction++) {
-            terrainRenderer.drawFlatTile(1 + (direction * 2), 0, direction * 90);
-            terrainRenderer.drawFlatTileWithFlatEdge(1 + (direction * 2), 2, direction * 90);
-            
-            terrainRenderer.drawFlatTileWithRightInsideCornerEdge(1 + (direction * 2), 4, direction * 90);
-            
-            terrainRenderer.drawFlatTileWithLeftOutsideCornerEdge(1 + (direction * 2), 6, direction * 90);
-            terrainRenderer.drawFlatTileWithRightOutsideCornerEdge(1 + (direction * 2), 8, direction * 90);
-            terrainRenderer.drawFlatTileWithOutsideCornerEdge(1 + (direction * 2), 10, direction * 90);
-
-            terrainRenderer.drawSlopedTileWithFlatEdge(1 + (direction * 2), 12, (direction * 90) + 45);
-
-            terrainRenderer.drawSlopedTileWithOutsideCornerEdge(1 + (direction * 2), 14, (direction * 90) + 45);
-            terrainRenderer.drawSlopedTileWithLeftOutsideCornerEdge(1 + (direction * 2), 16, (direction * 90) + 45);
-            terrainRenderer.drawSlopedTileWithRightOutsideCornerEdge(1 + (direction * 2), 18, (direction * 90) + 45);
+        for(let tileDefinition of this.tiles.definitions) {
+            terrainTileRenderer.drawDebugArrow(tileDefinition.row, tileDefinition.column, tileDefinition.direction);
         }
 
         this.requestRender();

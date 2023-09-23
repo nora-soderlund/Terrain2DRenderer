@@ -1,7 +1,9 @@
-import { Direction } from "../types/Direction";
-import { Point } from "../types/Point";
+import { Direction } from "../../types/Direction";
+import { Point } from "../../types/Point";
+import { Side } from "../../types/Side";
+import { TerrainTileType } from "../types/TerrainTileType";
 
-export default class TerrainRenderer {
+export default class TerrainTileRenderer {
     private readonly halfSize: number;
 
     private readonly edgeSize: number;
@@ -11,7 +13,7 @@ export default class TerrainRenderer {
     private readonly terrainColor = "#C3ECB2";
     private readonly edgeColor = "#FFF2AF";
 
-    private readonly debug = true;
+    private readonly debug = false;
     private readonly debugArrowSize: number;
     private readonly debugColor = "black";
 
@@ -23,6 +25,82 @@ export default class TerrainRenderer {
 
         this.debugArrowSize = this.size * 0.05;
     };
+
+    public draw(type: TerrainTileType, row: number, column: number, direction: Direction) {
+        switch(type) {
+            case TerrainTileType.FlatTile: {
+                this.drawFlatTile(row, column, direction);
+
+                break;
+            }
+
+            case TerrainTileType.FlatTileWithLeftFlatEdge: {
+                this.drawFlatTileWithLeftFlatEdge(row, column, direction);
+
+                break;
+            }
+
+            case TerrainTileType.FlatTileWithRightFlatEdge: {
+                this.drawFlatTileWithRightFlatEdge(row, column, direction);
+
+                break;
+            }
+
+            case TerrainTileType.FlatTileWithLeftInsideCornerEdge: {
+                this.drawFlatTileWithLeftInsideCornerEdge(row, column, direction);
+
+                break;
+            }
+
+            case TerrainTileType.FlatTileWithRightInsideCornerEdge: {
+                this.drawFlatTileWithRightInsideCornerEdge(row, column, direction);
+
+                break;
+            }
+
+            case TerrainTileType.FlatTileWithLeftOutsideCornerEdge: {
+                this.drawFlatTileWithLeftOutsideCornerEdge(row, column, direction);
+
+                break;
+            }
+
+            case TerrainTileType.FlatTileWithRightOutsideCornerEdge: {
+                this.drawFlatTileWithRightOutsideCornerEdge(row, column, direction);
+
+                break;
+            }
+            
+            case TerrainTileType.SlopedTile: {
+                this.drawSlopedTile(row, column, direction);
+
+                break;
+            }
+            
+            case TerrainTileType.SlopedTileWithLeftFlatEdge: {
+                this.drawSlopedTileWithLeftFlatEdge(row, column, direction);
+
+                break;
+            }
+            
+            case TerrainTileType.SlopedTileWithRightFlatEdge: {
+                this.drawSlopedTileWithRightFlatEdge(row, column, direction);
+
+                break;
+            }
+            
+            case TerrainTileType.SlopedTileWithRightOutsideCornerEdge: {
+                this.drawSlopedTileWithRightOutsideCornerEdge(row, column, direction);
+
+                break;
+            }
+            
+            case TerrainTileType.SlopedTileWithLeftOutsideCornerEdge: {
+                this.drawSlopedTileWithLeftOutsideCornerEdge(row, column, direction);
+
+                break;
+            }
+        }
+    }
 
     private getAngle(degrees: number) {
         return (Math.PI / 180) * degrees;
@@ -42,6 +120,26 @@ export default class TerrainRenderer {
     private drawDebugTile(row: number, column: number, direction: Direction) {
         if(this.debug) {
             this.context.save();
+
+            this.context.fillStyle = this.debugColor;
+
+            this.setTransformation(row, column, Direction.South);
+
+            this.context.textAlign = "center";
+
+            this.context.textBaseline = "bottom";
+            this.context.fillText(`Row ${row}`, 0, 0);
+            
+            this.context.textBaseline = "hanging";
+            this.context.fillText(`Column ${column}`, 0, 0);
+
+            this.context.restore();
+        }
+    };
+
+    public drawDebugArrow(row: number, column: number, direction: Direction) {
+        if(this.debug) {
+            this.context.save();
     
             this.setTransformation(row, column, direction);
 
@@ -55,22 +153,6 @@ export default class TerrainRenderer {
             this.context.lineTo(0, this.debugArrowSize);
             this.context.lineTo(this.debugArrowSize, 0);
             this.context.stroke();
-
-            this.context.restore();
-
-            this.context.save();
-
-            this.context.fillStyle = this.debugColor;
-
-            this.setTransformation(row, column, Direction.South);
-
-            this.context.textAlign = "center";
-
-            this.context.textBaseline = "bottom";
-            this.context.fillText(`Row ${row}`, 0, 0);
-            
-            this.context.textBaseline = "hanging";
-            this.context.fillText(`Column ${column}`, 0, 0);
 
             this.context.restore();
         }
@@ -89,28 +171,47 @@ export default class TerrainRenderer {
         this.drawDebugTile(row, column, direction);
     }
 
-    public drawFlatTileWithFlatEdge(row: number, column: number, direction: Direction) {
-        this.drawFlatTile(row, column, direction);
-
+    private drawFlatEdge(row: number, column: number, direction: Direction, side: Side, gap: number = 0) {
         this.context.save();
 
         this.setTransformation(row, column, direction);
 
         this.context.fillStyle = this.edgeColor;
-        this.context.fillRect(-this.halfSize, this.halfSize, this.size, this.edgeSize);
+
+        if(side === Side.Left)
+            this.context.fillRect(0, this.halfSize, this.halfSize - gap, this.edgeSize);
+        else if(side === Side.Right)
+            this.context.fillRect(-this.halfSize + gap, this.halfSize, this.halfSize - gap, this.edgeSize);
 
         this.context.restore();
     }
 
-    public drawFlatTileWithRightInsideCornerEdge(row: number, column: number, direction: Direction) {
-        this.drawFlatTile(row, column, direction);
+    public drawFlatTileWithLeftFlatEdge(row: number, column: number, direction: Direction) {
+        this.drawFlatEdge(row, column, direction, Side.Left);
+    }
 
+    public drawFlatTileWithRightFlatEdge(row: number, column: number, direction: Direction) {
+        this.drawFlatEdge(row, column, direction, Side.Right);
+    }
+
+    private drawLeftInsideCornerEdge(row: number, column: number, direction: Direction) {
         this.context.save();
 
         this.setTransformation(row, column, direction);
 
-        this.context.fillStyle = this.edgeColor;
-        this.context.fillRect(-this.halfSize + this.edgeSize, this.halfSize, this.size - this.edgeSize, this.edgeSize);
+        this.context.beginPath();
+        this.context.strokeStyle = this.edgeColor;
+        this.context.lineWidth = this.edgeSize;
+        this.context.arc(this.halfSize - this.edgeSize, this.halfSize - this.edgeSize, this.edgeSize * 1.5, this.getAngle(45), this.getAngle(45 + 45));
+        this.context.stroke();
+
+        this.context.restore();
+    }
+
+    private drawRightInsideCornerEdge(row: number, column: number, direction: Direction) {
+        this.context.save();
+
+        this.setTransformation(row, column, direction);
 
         this.context.beginPath();
         this.context.strokeStyle = this.edgeColor;
@@ -119,6 +220,18 @@ export default class TerrainRenderer {
         this.context.stroke();
 
         this.context.restore();
+    }
+
+    public drawFlatTileWithLeftInsideCornerEdge(row: number, column: number, direction: Direction) {
+        this.drawFlatEdge(row, column, direction, Side.Left, this.edgeSize);
+
+        this.drawLeftInsideCornerEdge(row, column, direction);
+    }
+
+    public drawFlatTileWithRightInsideCornerEdge(row: number, column: number, direction: Direction) {
+        this.drawFlatEdge(row, column, direction, Side.Right, this.edgeSize);
+
+        this.drawRightInsideCornerEdge(row, column, direction);
     }
 
     private drawLeftOutsideCornerEdge() {
@@ -152,52 +265,27 @@ export default class TerrainRenderer {
     }
 
     public drawFlatTileWithLeftOutsideCornerEdge(row: number, column: number, direction: Direction) {
-        this.drawFlatTile(row, column, direction);
-
         this.context.save();
-
         this.setTransformation(row, column, direction);
         this.drawLeftOutsideCornerEdge();
-
-        this.context.fillStyle = this.edgeColor;
-        this.context.fillRect(-this.halfSize, this.halfSize, this.size - (this.edgeSize * 2), this.edgeSize);
-
         this.context.restore();
+
+        this.drawFlatEdge(row, column, direction, Side.Left, this.edgeSize * 2);
     }
 
     public drawFlatTileWithRightOutsideCornerEdge(row: number, column: number, direction: Direction) {
-        this.drawFlatTile(row, column, direction);
-
         this.context.save();
-
         this.setTransformation(row, column, direction);
         this.drawRightOutsideCornerEdge();
-
-        this.context.fillStyle = this.edgeColor;
-        this.context.fillRect(-this.halfSize + (this.edgeSize * 2), this.halfSize, this.size - (this.edgeSize * 2), this.edgeSize);
-
         this.context.restore();
+
+        this.drawFlatEdge(row, column, direction, Side.Right, this.edgeSize * 2);
     }
 
-    public drawFlatTileWithOutsideCornerEdge(row: number, column: number, direction: Direction) {
-        this.drawFlatTile(row, column, direction);
-
+    public drawSlopedTile(row: number, column: number, direction: Direction) {
         this.context.save();
 
-        this.setTransformation(row, column, direction);
-        this.drawLeftOutsideCornerEdge();
-        this.drawRightOutsideCornerEdge();
-
-        this.context.fillStyle = this.edgeColor;
-        this.context.fillRect(-this.halfSize + (this.edgeSize * 2), this.halfSize, this.size - (this.edgeSize * 4), this.edgeSize);
-
-        this.context.restore();
-    }
-
-    private drawSlopedTile(row: number, column: number, direction: Direction) {
-        this.context.save();
-
-        this.setTransformation(row, column, direction);
+        this.setTransformation(row, column, direction - 45);
         
         this.context.fillStyle = this.terrainColor;
 
@@ -210,21 +298,30 @@ export default class TerrainRenderer {
 
         this.context.restore();
 
-        this.drawDebugTile(row, column, direction);
+        this.drawDebugTile(row, column, direction - 45);
     }
 
-    public drawSlopedTileWithFlatEdge(row: number, column: number, direction: Direction) {
-        this.drawSlopedTile(row, column, direction - 45);
-
+    private drawSlopedEdge(row: number, column: number, direction: Direction, side: Side, gap: number = 0) {
         this.context.save();
 
         this.setTransformation(row, column, direction);
 
         this.context.fillStyle = this.edgeColor;
 
-        this.context.fillRect(-this.halfSize * 1.5, -this.halfEdgeSize + 1.5, this.size * 1.5, this.edgeSize);
+        if(side === Side.Left)
+            this.context.fillRect(0, -this.halfEdgeSize + 1.5, this.size * .75 - gap, this.edgeSize);
+        else if(side === Side.Right)
+            this.context.fillRect(-this.halfSize * 1.5 + (gap * 1), -this.halfEdgeSize + 1.5, this.size * .75 - gap, this.edgeSize);
 
         this.context.restore();
+    }
+
+    public drawSlopedTileWithLeftFlatEdge(row: number, column: number, direction: Direction) {
+        this.drawSlopedEdge(row, column, direction, Side.Left);
+    }
+
+    public drawSlopedTileWithRightFlatEdge(row: number, column: number, direction: Direction) {
+        this.drawSlopedEdge(row, column, direction, Side.Right);
     }
 
     private drawSlopedLeftOutsideCorner(row: number, column: number, direction: Direction) {
@@ -261,52 +358,13 @@ export default class TerrainRenderer {
         this.context.restore();
     };
 
-    public drawSlopedTileWithOutsideCornerEdge(row: number, column: number, direction: Direction) {
-        this.drawSlopedTile(row, column, direction - 45);
-
-        this.context.save();
-
-        this.setTransformation(row, column, direction);
-
-        this.context.fillStyle = this.edgeColor;
-
-        this.context.fillRect(-(this.halfSize * 1.5) + this.edgeSize, -this.halfEdgeSize + (this.halfEdgeSize * .2), (this.size * 1.5) - (this.edgeSize * 2) - 4, this.edgeSize);
-
-        this.context.restore();
-
-        this.drawSlopedLeftOutsideCorner(row, column, direction);
-        this.drawSlopedRightOutsideCorner(row, column, direction);
-    }
-
     public drawSlopedTileWithRightOutsideCornerEdge(row: number, column: number, direction: Direction) {
-        this.drawSlopedTile(row, column, direction - 45);
-
-        this.context.save();
-
-        this.setTransformation(row, column, direction);
-
-        this.context.fillStyle = this.edgeColor;
-
-        this.context.fillRect(-(this.halfSize * 1.5) + this.edgeSize, -this.halfEdgeSize + (this.halfEdgeSize * .2), (this.size * 1.5) - this.edgeSize - 4, this.edgeSize);
-
-        this.context.restore();
-
+        this.drawSlopedEdge(row, column, direction, Side.Right, this.edgeSize);
         this.drawSlopedRightOutsideCorner(row, column, direction);
     }
 
     public drawSlopedTileWithLeftOutsideCornerEdge(row: number, column: number, direction: Direction) {
-        this.drawSlopedTile(row, column, direction - 45);
-
-        this.context.save();
-
-        this.setTransformation(row, column, direction);
-
-        this.context.fillStyle = this.edgeColor;
-
-        this.context.fillRect(-(this.halfSize * 1.5), -this.halfEdgeSize + (this.halfEdgeSize * .2), (this.size * 1.5) - this.edgeSize - 4, this.edgeSize);
-
-        this.context.restore();
-
+        this.drawSlopedEdge(row, column, direction, Side.Left, this.edgeSize)
         this.drawSlopedLeftOutsideCorner(row, column, direction);
     }
 }
