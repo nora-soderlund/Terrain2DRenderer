@@ -6,8 +6,8 @@
     "build": "npx webpack",
     "test": "npx jest",
 
-    "render:geojson": "cd .github/scripts/render-geojson && npm start",
-    "render:debug": "cd .github/scripts/render-debug && npm start"
+    "render:geojson": "cd .github/scripts/render && npm run geojson",
+    "render:debug": "cd .github/scripts/render && npm run debug"
   },
   "devDependencies": {
     "@types/jest": "^29.5.4",

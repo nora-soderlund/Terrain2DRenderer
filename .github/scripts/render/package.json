@@ -1,10 +1,11 @@
 {
-  "name": "render-geojson",
+  "name": "render",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx ts-node src/index.ts"
+    "geojson": "npx ts-node src/geojson.ts",
+    "debug": "npx ts-node src/debug.ts"
   },
   "keywords": [],
   "author": "",
