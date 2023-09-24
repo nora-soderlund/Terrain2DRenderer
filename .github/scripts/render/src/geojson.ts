@@ -3,7 +3,7 @@ import TerrainTiles from "../../../../src/core/terrain/TerrainTiles";
 import TerrainCanvas from "../../../../src/core/terrain/TerrainCanvas";
 import NodeTerrainGrid from "../../../../src/node/terrain/NodeTerrainGrid";
 
-const terrainGrid = NodeTerrainGrid.fromAsset("../../../../assets/Sweden.json");
+const terrainGrid = NodeTerrainGrid.fromAsset("../../../assets/Sweden.json");
 const terrainTilesCollection = [ new TerrainTiles(terrainGrid) ];
 
 const terrainCanvas = new TerrainCanvas(terrainTilesCollection, 10);
