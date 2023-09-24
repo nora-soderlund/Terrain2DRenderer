@@ -1,11 +1,13 @@
 {
-  "name": "terrain",
+  "name": "terrain2drenderer",
   "version": "0.9.0",
   "scripts": {
     "start": "npx webpack --watch",
+    "build": "npx webpack",
     "test": "npx jest",
 
-    "render:geojson": "cd .github/scripts/render-geojson && npm start"
+    "render:geojson": "cd .github/scripts/render-geojson && npm start",
+    "render:debug": "cd .github/scripts/render-debug && npm start"
   },
   "devDependencies": {
     "@types/jest": "^29.5.4",

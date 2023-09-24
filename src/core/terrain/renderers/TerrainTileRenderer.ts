@@ -14,11 +14,10 @@ export default class TerrainTileRenderer {
     private readonly terrainColor = "#C3ECB2";
     private readonly edgeColor = "#FFF2AF";
 
-    private readonly debug = false;
     private readonly debugArrowSize: number;
     private readonly debugColor = "black";
 
-    constructor(private readonly context: CanvasRenderingContext2D, private readonly size: number, private readonly offset: Point) {
+    constructor(private readonly context: CanvasRenderingContext2D, private readonly size: number, private readonly offset: Point, private readonly debug: boolean = false) {
         this.halfSize = this.size / 2;
 
         this.edgeSize = this.size * 0.2;

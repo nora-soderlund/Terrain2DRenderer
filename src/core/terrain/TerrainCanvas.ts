@@ -10,7 +10,7 @@ export default class TerrainCanvas {
 
     public readonly canvas = createCanvas(0, 0);
 
-    constructor(private readonly tiles: TerrainTiles[], private readonly size: number) {
+    constructor(private readonly tiles: TerrainTiles[], private readonly size: number, private readonly debug: boolean = false) {
         this.rows = Math.max(...tiles.map((tiles) => tiles.grid.rows));
         this.columns = Math.max(...tiles.map((tiles) => tiles.grid.columns));
 
@@ -41,7 +41,7 @@ export default class TerrainCanvas {
         const terrainGridRenderer = new TerrainGridRenderer(context, this.size, offset);
         terrainGridRenderer.drawGrid();
 
-        const terrainTileRenderer = new TerrainTileRenderer(context, this.size, offset);
+        const terrainTileRenderer = new TerrainTileRenderer(context, this.size, offset, this.debug);
 
         for(let tiles of this.tiles) {
             for(let tileDefinition of tiles.definitions) {

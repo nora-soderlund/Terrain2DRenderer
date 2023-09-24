@@ -1,12 +1,12 @@
-name: Render GeoJSON
+name: Render previews
 on:
   push:
     branches:
       - main
 
 jobs:
-  render-geojson:
-    name: Render GeoJSON
+  render-previews:
+    name: Render previews
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -17,11 +17,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
 
-      - name: Install pacckages
+      - name: Install packages
         run: npm ci
       
       - name: Render GeoJSON to file via Node
         run: npm run render:geojson
+      
+      - name: Render debug to file via Node
+        run: npm run render:debug
         
       - name: Commit and push changes
         run: |
@@ -29,5 +32,5 @@ jobs:
           git config --global user.email "norasoderlund@icloud.com"
 
           git add -A
-          git commit -m "Update GeoJSON render preview"
+          git commit -m "Update render previews"
           git push
