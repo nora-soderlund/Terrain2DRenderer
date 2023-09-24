@@ -23,6 +23,8 @@ jobs:
         
       - name: Commit and push changes
         run: |
+          git config --global user.name "GitHub Actions"
+
           git add -A
           git commit -m "Update GeoJSON render preview"
           git push
