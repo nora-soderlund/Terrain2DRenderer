@@ -14,7 +14,7 @@ const terrainGrid = new TerrainGrid([
 
 const terrainTiles = new TerrainTiles(terrainGrid);
 
-const terrainCanvas = new TerrainCanvas([ terrainTiles ], 100, true);
+const terrainCanvas = new TerrainCanvas([ terrainTiles ], 100);
 
 const dataUrl = terrainCanvas.canvas.toDataURL("image/png");
 const dataUrlBytes = dataUrl.replace(/^data:image\/\w+;base64,/, "");
