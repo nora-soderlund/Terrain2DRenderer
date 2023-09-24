@@ -30,6 +30,7 @@ jobs:
         run: npm run render:debug
         
       - name: Commit and push changes
+        continue-on-error: true
         run: |
           git config --global user.name "Nora Söderlund (GitHub Actions)"
           git config --global user.email "norasoderlund@icloud.com"
