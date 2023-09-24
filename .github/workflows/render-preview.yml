@@ -23,6 +23,9 @@ jobs:
       - name: Render GeoJSON to file via Node
         run: npm run render:geojson
       
+      - name: Render island to file via Node
+        run: npm run render:island
+      
       - name: Render debug to file via Node
         run: npm run render:debug
         

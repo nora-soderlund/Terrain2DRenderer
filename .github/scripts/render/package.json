@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "geojson": "npx ts-node src/geojson.ts",
+    "island": "npx ts-node src/island.ts",
     "debug": "npx ts-node src/debug.ts"
   },
   "keywords": [],
