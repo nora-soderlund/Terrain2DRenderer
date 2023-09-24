@@ -23,7 +23,8 @@ jobs:
         
       - name: Commit and push changes
         run: |
-          git config --global user.name "GitHub Actions"
+          git config --global user.name "Nora Söderlund (GitHub Actions)"
+          git config --global user.email "norasoderlund@icloud.com"
 
           git add -A
           git commit -m "Update GeoJSON render preview"
