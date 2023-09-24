@@ -11,3 +11,6 @@ There are no plans set in stone, however, this is what's taken into consideratio
 | Serversided static rendering |
 | GeoJSON to grid processing (most likely as a module) |
 | Customizable tile rendering |
+
+## Previews
+<img src=".github/previews/geojson.png" height="500"/>
