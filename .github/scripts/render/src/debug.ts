@@ -1,9 +1,12 @@
 import { writeFileSync } from "node:fs";
 import TerrainDebugCanvas from "../../../../src/DebugCanvas";
+import { createCanvas } from "canvas";
 
-const terrainCanvas = new TerrainDebugCanvas(100);
+const canvas = createCanvas(0, 0);
 
-const dataUrl = terrainCanvas.element.toDataURL("image/png");
+TerrainDebugCanvas.render(canvas.getContext("2d"), 100);
+
+const dataUrl = canvas.toDataURL("image/png");
 const dataUrlBytes = dataUrl.replace(/^data:image\/\w+;base64,/, "");
 const dataBuffer = Buffer.from(dataUrlBytes, "base64");
 
