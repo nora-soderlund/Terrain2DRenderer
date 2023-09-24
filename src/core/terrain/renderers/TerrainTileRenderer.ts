@@ -1,6 +1,7 @@
-import { Direction } from "../../types/Direction";
-import { Point } from "../../types/Point";
-import { Side } from "../../types/Side";
+import { CanvasRenderingContext2D } from "canvas";
+import { Direction } from "../../../types/Direction";
+import { Point } from "../../../types/Point";
+import { Side } from "../../../types/Side";
 import { TerrainTileType } from "../types/TerrainTileType";
 
 export default class TerrainTileRenderer {

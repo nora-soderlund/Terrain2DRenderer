@@ -1,3 +1,4 @@
+import { CanvasRenderingContext2D } from "canvas";
 import TerrainCanvasMouseEvents from "./events/GameCanvasMouseEvents";
 import GameCanvasEntity from "./types/GameCanvasEntity";
 
@@ -27,7 +28,7 @@ export default class GameCanvas {
         //this.offset.left =  - Math.floor((this.tiles.grid.columns * this.size) / 2);
         //this.offset.top =  - Math.floor((this.tiles.grid.rows * this.size) / 2);
 
-        const context = this.element.getContext("2d")!;
+        const context = this.element.getContext("2d") as unknown as CanvasRenderingContext2D;
 
         for(let canvasEntity of this.canvasEntities) {
             context.save();

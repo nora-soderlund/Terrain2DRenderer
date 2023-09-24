@@ -1,0 +1,25 @@
+name: Render GeoJSON
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  render-geojson:
+    name: Render GeoJSON
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+      
+      - name: Render GeoJSON to file via Node
+        run: npm run render:geojson
+        
+      - name: Commit and push changes
+        run: |
+          git add -A
+          git commit -m "Update GeoJSON render preview"
+          git push

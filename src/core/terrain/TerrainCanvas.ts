@@ -1,18 +1,14 @@
-import { Direction } from "../types/Direction";
-import { Point } from "../types/Point";
-import TerrainCanvasMouseEvents from "../game/events/GameCanvasMouseEvents";
-import TerrainGrid from "./TerrainGrid";
 import TerrainGridRenderer from "./renderers/TerrainGridRenderer";
 import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
 import TerrainWaterRenderer from "./renderers/TerrainWaterRenderer";
 import TerrainTiles from "./TerrainTiles";
-import GameCanvasEntity from "../game/types/GameCanvasEntity";
+import { createCanvas } from "canvas";
 
-export default class TerrainCanvas implements GameCanvasEntity {
-    public readonly element = document.createElement("canvas");
-
+export default class TerrainCanvas {
     private readonly rows: number;
     private readonly columns: number;
+
+    public readonly canvas = createCanvas(0, 0);
 
     constructor(private readonly tiles: TerrainTiles[], private readonly size: number) {
         this.rows = Math.max(...tiles.map((tiles) => tiles.grid.rows));
@@ -21,24 +17,18 @@ export default class TerrainCanvas implements GameCanvasEntity {
         this.render();
     };
 
-    public draw(context: CanvasRenderingContext2D, offset: Point): void {
-        context.drawImage(this.element,
-            0, 0, this.element.width, this.element.height,
-            offset.left, offset.top, this.element.width, this.element.height);
-    };
-
     private requestRender() {
         window.requestAnimationFrame(this.render.bind(this));
     };
 
     private render() {
-        this.element.width = this.columns * this.size;
-        this.element.height = this.rows * this.size;
+        this.canvas.width = this.columns * this.size;
+        this.canvas.height = this.rows * this.size;
 
         //this.offset.left =  - Math.floor((this.tiles.grid.columns * this.size) / 2);
         //this.offset.top =  - Math.floor((this.tiles.grid.rows * this.size) / 2);
 
-        const context = this.element.getContext("2d")!;
+        const context = this.canvas.getContext("2d")!;
 
         const offset = {
             left: 0,

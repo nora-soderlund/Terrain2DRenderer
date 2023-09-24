@@ -1,15 +1,8 @@
-import { Direction } from "../types/Direction";
+import { Direction } from "../../types/Direction";
 
 export default class TerrainGrid {
     public readonly rows: number;
     public readonly columns: number;
-
-    public static async fromAsset(assetName: string) {
-        const response = await fetch("assets/" + assetName);
-        const result = await response.json();
-      
-        return new this(result);
-    }
 
     constructor(private readonly map: number[][]) {
         for(let row = 0; row < map.length; row++)

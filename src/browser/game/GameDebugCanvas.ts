@@ -1,10 +1,11 @@
-import { Point } from "../types/Point";
-import TerrainGridRenderer from "./renderers/TerrainGridRenderer";
-import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
-import TerrainWaterRenderer from "./renderers/TerrainWaterRenderer";
-import TerrainCanvasMouseEvents from "../game/events/GameCanvasMouseEvents";
+import { Point } from "../../types/Point";
+import TerrainGridRenderer from "../../core/terrain/renderers/TerrainGridRenderer";
+import TerrainTileRenderer from "../../core/terrain/renderers/TerrainTileRenderer";
+import TerrainWaterRenderer from "../../core/terrain/renderers/TerrainWaterRenderer";
+import GameCanvasMouseEvents from "./events/GameCanvasMouseEvents";
+import { CanvasRenderingContext2D } from "canvas";
 
-export default class TerrainDebugCanvas {
+export default class GameDebugCanvas {
     public readonly element = document.createElement("canvas");
 
     private offset: Point = {
@@ -12,7 +13,7 @@ export default class TerrainDebugCanvas {
         top: 0
     };
 
-    private readonly mouseEvents = new TerrainCanvasMouseEvents(this.element);
+    private readonly mouseEvents = new GameCanvasMouseEvents(this.element);
 
     constructor(private readonly size: number) {
         this.requestRender();
@@ -31,7 +32,7 @@ export default class TerrainDebugCanvas {
         this.offset.left = this.mouseEvents.offset.left + -1300;
         this.offset.top = this.mouseEvents.offset.top;
 
-        const context = this.element.getContext("2d")!;
+        const context = this.element.getContext("2d")! as unknown as CanvasRenderingContext2D;
 
 
         const terrainWaterRenderer = new TerrainWaterRenderer(context);

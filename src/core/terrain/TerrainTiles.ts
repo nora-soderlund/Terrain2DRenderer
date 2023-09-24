@@ -1,4 +1,4 @@
-import { Direction } from "../types/Direction";
+import { Direction } from "../../types/Direction";
 import TerrainGrid from "./TerrainGrid";
 import { TerrainTileDefinition } from "./types/TerrainTileDefinition";
 import { TerrainTileType } from "./types/TerrainTileType";
