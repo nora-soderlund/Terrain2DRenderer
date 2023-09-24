@@ -15,5 +15,11 @@ There are no plans set in stone, however, this is what's taken into consideratio
 ## Previews
 These previews are rendered inside of GitHub runners from the most latest main commit.
 
+### Debug preview
+<img src=".github/previews/debug.png" width="100%"/>
 
-<img src=".github/previews/geojson.png" width="40%"/><img src=".github/previews/debug.png" width="60%"/>
+### Island preview
+<img src=".github/previews/island.png" width="100%"/>
+
+### GeoJSON preview
+<img src=".github/previews/geojson.png" width="100%"/>
