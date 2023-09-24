@@ -6,7 +6,7 @@
     "build": "npx webpack",
     "test": "npx jest",
 
-    "render": "cd .github/scripts/render && npm run geojson",
+    "render:geojson": "cd .github/scripts/render && npm run geojson",
     "render:island": "cd .github/scripts/render && npm run island",
     "render:debug": "cd .github/scripts/render && npm run debug"
   },
