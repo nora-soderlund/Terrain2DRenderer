@@ -13,4 +13,7 @@ There are no plans set in stone, however, this is what's taken into consideratio
 | Customizable tile rendering |
 
 ## Previews
-<img src=".github/previews/geojson.png" height="500"/>
+These previews are rendered inside of GitHub runners from the most latest main commit.
+
+
+<img src=".github/previews/geojson.png" width="40%"/><img src=".github/previews/debug.png" width="60%"/>
