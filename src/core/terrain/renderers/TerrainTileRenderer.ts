@@ -9,7 +9,6 @@ export default class TerrainTileRenderer {
 
     private readonly edgeSize: number;
     private readonly halfEdgeSize: number;
-    
 
     private readonly terrainColor = "#C3ECB2";
     private readonly edgeColor = "#FFF2AF";

@@ -4,17 +4,9 @@ import TerrainWaterRenderer from "./core/terrain/renderers/TerrainWaterRenderer"
 import { CanvasRenderingContext2D, createCanvas } from "canvas";
 
 export default class DebugCanvas {
-    public readonly element = createCanvas(0, 0);
-
-    constructor(private readonly size: number) {
-        this.render();
-    };
-
-    private render() {
-        this.element.width = 25 * this.size;
-        this.element.height = 9 * this.size;
-
-        const context = this.element.getContext("2d")! as unknown as CanvasRenderingContext2D;
+    public static render(context: CanvasRenderingContext2D, size: number) {
+        context.canvas.width = 25 * size;
+        context.canvas.height = 9 * size;
 
         const offset = {
             left: 100,
@@ -24,10 +16,10 @@ export default class DebugCanvas {
         const terrainWaterRenderer = new TerrainWaterRenderer(context);
         terrainWaterRenderer.drawWater();
 
-        const terrainGridRenderer = new TerrainGridRenderer(context, this.size, offset);
+        const terrainGridRenderer = new TerrainGridRenderer(context, size, offset);
         terrainGridRenderer.drawGrid();
 
-        const terrainTileRenderer = new TerrainTileRenderer(context, this.size, offset, true);
+        const terrainTileRenderer = new TerrainTileRenderer(context, size, offset, true);
 
         for(let direction = 0; direction < 4; direction++) {
             for(let index = 0; index < 14; index += 2)

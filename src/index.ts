@@ -5,9 +5,11 @@ import TerrainTiles from "./core/terrain/TerrainTiles";
 import BrowserTerrainGrid from "./browser/terrain/BrowserTerrainGrid";
 import GameCanvas from "./browser/game/GameCanvas";
 import GameTerrainEntity from "./browser/game/entities/GameTerrainEntity";
+import DebugCanvas from "./DebugCanvas";
+import { CanvasRenderingContext2D } from "canvas";
 
 const testTerrainGrid = new TerrainGrid([
-  [ 1, 0, 0, 0, 1, 0, 1, 0, 0 ],
+  [ 1, 0, 0, 1, 1, 0, 1, 0, 0 ],
   [ 0, 1, 1, 1, 1, 0, 1, 1, 0 ],
   [ 0, 0, 1, 1, 1, 0, 1, 1, 1 ],
   [ 0, 0, 0, 1, 0, 1, 1, 1, 1 ],
@@ -46,12 +48,14 @@ const testTerrainGrid = new TerrainGrid([
   
   const terrainTilesCollection = terrainGrids.map((terrainGrid) => {
     const terrainTiles = new TerrainTiles(terrainGrid);
-   
+
     return terrainTiles;
   });
 
   const testTerrainTiles = new TerrainTiles(testTerrainGrid);
-  const terrainCanvas = new TerrainCanvas(terrainTilesCollection, 10);
+  const testTerrainTilesCollection = [ testTerrainTiles ];
+
+  const terrainCanvas = new TerrainCanvas(terrainTilesCollection, 10, false);
 
   console.log(terrainCanvas.canvas);
 
@@ -60,4 +64,9 @@ const testTerrainGrid = new TerrainGrid([
   const gameCanvas = new GameCanvas([ gameTerrainEntity ]);
 
   document.body.append(gameCanvas.element);
+
+  const debugCanvas = document.createElement("canvas");
+  DebugCanvas.render(debugCanvas.getContext("2d") as unknown as CanvasRenderingContext2D, 100);
+  debugCanvas.style.width = debugCanvas.style.height = "auto";
+  document.body.append(debugCanvas);
 })();

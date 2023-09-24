@@ -22,11 +22,14 @@ export default class TerrainTiles {
                 console.log("slope at " + row + " x " + column);
 
                 for(let direction = 45; direction < 360; direction += 90) {
-                    if(!this.grid.isTileByDirectionWater(row, column, direction + Direction.NorthEast))
+                    if(this.grid.isTileByDirectionFlat(row, column, (direction - 45) + Direction.East))
                         continue;
 
-                    if(!this.grid.isTileByDirectionFlat(row, column, direction + Direction.SouthEast))
+                    if(!this.grid.isTileByDirectionFlat(row, column, (direction - 45) + Direction.South))
                         continue;
+
+                    console.log("slope at " + row + " x " + column + ", direction " + direction);
+
 
                     tiles.push(this.getSlopedTile(row, column, direction));
 
