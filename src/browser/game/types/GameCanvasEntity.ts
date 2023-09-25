@@ -1,6 +1,10 @@
-import { CanvasRenderingContext2D } from "canvas";
-import { Point } from "../../../types/Point";
+import GameCanvas from "../GameCanvas";
+import { GameEntityPriority } from "./GameEntityPriority";
 
 export default interface GameCanvasEntity {
-    draw(context: CanvasRenderingContext2D, offset: Point): void;
+    row: number;
+    column: number;
+    priority: GameEntityPriority;
+    
+    draw(gameCanvas: GameCanvas, context: CanvasRenderingContext2D): void;
 };

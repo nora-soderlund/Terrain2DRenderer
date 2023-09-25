@@ -1,6 +1,4 @@
-import TerrainGridRenderer from "./renderers/TerrainGridRenderer";
 import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
-import TerrainWaterRenderer from "./renderers/TerrainWaterRenderer";
 import TerrainTiles from "./TerrainTiles";
 import { createCanvas } from "canvas";
 
@@ -17,10 +15,6 @@ export default class TerrainCanvas {
         this.render();
     };
 
-    private requestRender() {
-        window.requestAnimationFrame(this.render.bind(this));
-    };
-
     private render() {
         this.canvas.width = this.columns * this.size;
         this.canvas.height = this.rows * this.size;
@@ -34,12 +28,6 @@ export default class TerrainCanvas {
             left: 0,
             top: 0
         };
-
-        const terrainWaterRenderer = new TerrainWaterRenderer(context);
-        terrainWaterRenderer.drawWater();
-
-        const terrainGridRenderer = new TerrainGridRenderer(context, this.size, offset);
-        terrainGridRenderer.drawGrid();
 
         const terrainTileRenderer = new TerrainTileRenderer(context, this.size, offset, this.debug);
 

@@ -7,6 +7,10 @@ import GameCanvas from "./browser/game/GameCanvas";
 import GameTerrainEntity from "./browser/game/entities/GameTerrainEntity";
 import DebugCanvas from "./DebugCanvas";
 import { CanvasRenderingContext2D } from "canvas";
+import GameWaterEntity from "./browser/game/entities/GameWaterEntity";
+import WaterRenderer from "./core/water/WaterRenderer";
+import GameGridEntity from "./browser/game/entities/GameGridEntity";
+import GridCanvas from "./core/grid/GridCanvas";
 
 const testTerrainGrid = new TerrainGrid([
   [ 1, 0, 0, 1, 1, 0, 1, 0, 0 ],
@@ -30,8 +34,10 @@ const testTerrainGrid = new TerrainGrid([
   console.log(terrainCanvas.canvas);
 
   const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
+  const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
+  const gameGridEntity = new GameGridEntity(new GridCanvas(10));
   
-  const gameCanvas = new GameCanvas([ gameTerrainEntity ]);
+  const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
 
   document.body.append(gameCanvas.element);
 

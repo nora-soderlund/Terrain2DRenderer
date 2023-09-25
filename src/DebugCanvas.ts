@@ -1,6 +1,5 @@
-import TerrainGridRenderer from "./core/terrain/renderers/TerrainGridRenderer";
+import TerrainGridRenderer from "./core/grid/GridRenderer";
 import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
-import TerrainWaterRenderer from "./core/terrain/renderers/TerrainWaterRenderer";
 import { CanvasRenderingContext2D, createCanvas } from "canvas";
 
 export default class DebugCanvas {
@@ -12,12 +11,6 @@ export default class DebugCanvas {
             left: 100,
             top: 0
         };
-
-        const terrainWaterRenderer = new TerrainWaterRenderer(context);
-        terrainWaterRenderer.drawWater();
-
-        const terrainGridRenderer = new TerrainGridRenderer(context, size, offset);
-        terrainGridRenderer.drawGrid();
 
         const terrainTileRenderer = new TerrainTileRenderer(context, size, offset, true);
 

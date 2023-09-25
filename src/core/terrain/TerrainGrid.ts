@@ -5,8 +5,10 @@ export default class TerrainGrid {
     public readonly columns: number;
 
     constructor(private readonly map: number[][]) {
-        for(let row = 0; row < map.length; row++)
-            this.map[row] = [ 0, ...map[row], 0 ];
+        for(let row = 0; row < map.length; row++) {
+            this.map[row].unshift(0);
+            this.map[row].push(0);            
+        }
 
         this.map.unshift([]);
         this.map.push([]);
