@@ -9,7 +9,7 @@ const debugCanvas = createCanvas(0, 0);
 TerrainDebugCanvas.render(debugCanvas.getContext("2d"), 100);
 
 const waterRenderer = new WaterRenderer();
-const gridCanvas = new GridCanvas(10);
+const gridCanvas = new GridCanvas(100);
 
 gridCanvas.render(debugCanvas.width, debugCanvas.height);
 

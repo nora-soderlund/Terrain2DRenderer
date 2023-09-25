@@ -19,7 +19,7 @@ const terrainTiles = new TerrainTiles(terrainGrid);
 const terrainCanvas = new TerrainCanvas([ terrainTiles ], 100);
 
 const waterRenderer = new WaterRenderer();
-const gridCanvas = new GridCanvas(10);
+const gridCanvas = new GridCanvas(100);
 
 gridCanvas.render(terrainCanvas.canvas.width, terrainCanvas.canvas.height);
 
