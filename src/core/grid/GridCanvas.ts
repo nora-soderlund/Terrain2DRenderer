@@ -14,8 +14,6 @@ export default class GridCanvas {
         height = Math.ceil(height / this.size) * this.size;
 
         if(this.canvas.width === width && this.canvas.height === height) {
-            console.debug("GridCanvas is already rendered with the input size, skipping...");
-
             return;
         }
 

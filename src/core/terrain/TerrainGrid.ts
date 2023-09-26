@@ -33,8 +33,6 @@ export default class TerrainGrid {
                 
                 this.map[row][column] = 255;
 
-                console.log("found slope at " + row + " x " + column + " at direction " + direction);
-                
                 break;
             }
         }

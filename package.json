@@ -5,12 +5,12 @@
     "start": "npx webpack --watch",
     "build": "npx webpack",
     "test": "npx jest",
-
     "render:geojson": "cd .github/scripts/render && npm run geojson",
     "render:island": "cd .github/scripts/render && npm run island",
     "render:debug": "cd .github/scripts/render && npm run debug"
   },
   "devDependencies": {
+    "@types/geojson": "^7946.0.11",
     "@types/jest": "^29.5.4",
     "ts-jest": "^29.1.1",
     "ts-loader": "^9.4.4",
