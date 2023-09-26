@@ -11,38 +11,84 @@ import GameWaterEntity from "./browser/game/entities/GameWaterEntity";
 import WaterRenderer from "./core/water/WaterRenderer";
 import GameGridEntity from "./browser/game/entities/GameGridEntity";
 import GridCanvas from "./core/grid/GridCanvas";
-
-const testTerrainGrid = new TerrainGrid([
-  [ 1, 0, 0, 1, 1, 0, 1, 0, 0 ],
-  [ 0, 1, 1, 1, 1, 0, 1, 1, 0 ],
-  [ 0, 0, 1, 1, 1, 0, 1, 1, 1 ],
-  [ 0, 0, 0, 1, 0, 1, 1, 1, 1 ],
-  [ 0, 0, 1, 1, 1, 0, 1, 0, 0 ]
-]);
-
+import GeoJsonAdapter from "./adapters/geojson/GeoJsonAdapter";
+import CanvasPathsAdapter from "./adapters/canvas/CanvasPathsAdapter";
+import CanvasGridAdapter from "./adapters/canvas/CanvasGridAdapter";
 
 (async () => {
+  {
+    const response = await fetch("../assets/datahub/countries/countries.geojson");
+    const result = await response.json();
 
-  const terrainGrid = await BrowserTerrainGrid.fromAsset("../assets/Sweden.json");
-  const terrainTilesCollection = [ new TerrainTiles(terrainGrid) ];
+    const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === "Sweden");
 
-  const testTerrainTiles = new TerrainTiles(testTerrainGrid);
-  const testTerrainTilesCollection = [ testTerrainTiles ];
+    if(!feature)
+      return alert("no sweden feature found :(");
 
-  const terrainCanvas = new TerrainCanvas(terrainTilesCollection, 10, false);
+    const paths = GeoJsonAdapter.getPathsFromFeature(feature, 3, 0);
 
-  console.log(terrainCanvas.canvas);
+    if(!paths)
+      return alert("no paths :(");
 
-  const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
-  const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
-  const gameGridEntity = new GameGridEntity(new GridCanvas(10));
+    const canvas = CanvasPathsAdapter.getCanvasFromPaths(paths);
+
+    const gridMap = CanvasGridAdapter.getGridMapFromCanvas(canvas);
+
+    const testTerrainGrid = new TerrainGrid(gridMap);
+    
+    const testTerrainTiles = new TerrainTiles(testTerrainGrid);
+    const testTerrainTilesCollection = [ testTerrainTiles ];
+    const terrainCanvas = new TerrainCanvas(testTerrainTilesCollection, 10, false);
+    const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
+
+    const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
+    const gameGridEntity = new GameGridEntity(new GridCanvas(10));
+
+    const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
+
+    document.body.append(gameCanvas.element);
+  }
+
+  {
+    const terrainGrid = await BrowserTerrainGrid.fromAsset("../assets/Sweden.json");
+    const terrainTilesCollection = [ new TerrainTiles(terrainGrid) ];
   
-  const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
+    const terrainCanvas = new TerrainCanvas(terrainTilesCollection, 10, false);
+  
+    console.log(terrainCanvas.canvas);
+  
+    const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
+    const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
+    const gameGridEntity = new GameGridEntity(new GridCanvas(10));
+    
+    const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
+  
+    document.body.append(gameCanvas.element);
+  }
 
-  document.body.append(gameCanvas.element);
+  {
+    const testTerrainGrid = new TerrainGrid([
+      [ 1, 0, 0, 1, 1, 0, 1, 0, 0 ],
+      [ 0, 1, 1, 1, 1, 0, 1, 1, 0 ],
+      [ 0, 0, 1, 1, 1, 0, 1, 1, 1 ],
+      [ 0, 0, 0, 1, 0, 1, 1, 1, 1 ],
+      [ 0, 0, 1, 1, 1, 0, 1, 0, 0 ]
+    ]);
+    
+    const testTerrainTiles = new TerrainTiles(testTerrainGrid);
+    const testTerrainTilesCollection = [ testTerrainTiles ];
+    const terrainCanvas = new TerrainCanvas(testTerrainTilesCollection, 100, false);
+    const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
 
-  const debugCanvas = document.createElement("canvas");
-  DebugCanvas.render(debugCanvas.getContext("2d") as unknown as CanvasRenderingContext2D, 100);
-  debugCanvas.style.width = debugCanvas.style.height = "auto";
-  document.body.append(debugCanvas);
+    const gameCanvas = new GameCanvas([ gameTerrainEntity ], 100);
+
+    document.body.append(gameCanvas.element);
+  }
+
+  {
+    const debugCanvas = document.createElement("canvas");
+    DebugCanvas.render(debugCanvas.getContext("2d") as unknown as CanvasRenderingContext2D, 100);
+    debugCanvas.style.width = debugCanvas.style.height = "auto";
+    document.body.append(debugCanvas);
+  }
 })();
