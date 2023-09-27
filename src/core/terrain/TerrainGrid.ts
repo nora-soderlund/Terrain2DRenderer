@@ -1,10 +1,11 @@
 import { Direction } from "../../types/Direction";
+import { GridMap } from "../../types/GridMap";
 
 export default class TerrainGrid {
     public readonly rows: number;
     public readonly columns: number;
 
-    constructor(private readonly map: number[][]) {
+    constructor(private readonly map: GridMap) {
         for(let row = 0; row < map.length; row++) {
             this.map[row].unshift(0);
             this.map[row].push(0);            

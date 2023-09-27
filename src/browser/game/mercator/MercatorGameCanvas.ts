@@ -1,8 +1,8 @@
-import TerrainCanvasMouseEvents from "./events/GameCanvasMouseEvents";
-import GameCanvasEntity from "./types/GameCanvasEntity";
-import GameCanvasInterface from "./types/GameCanvasInterface";
+import GameCanvasEntity from "../types/GameCanvasEntity";
+import TerrainCanvasMouseEvents from "../events/GameCanvasMouseEvents";
+import GameCanvasInterface from "../types/GameCanvasInterface";
 
-export default class GameCanvas implements GameCanvasInterface {
+export default class MercatorGameCanvas implements GameCanvasInterface {
     public readonly element = document.createElement("canvas");
     private readonly mouseEvents = new TerrainCanvasMouseEvents(this.element);
 

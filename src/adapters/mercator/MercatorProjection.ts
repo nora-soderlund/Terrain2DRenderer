@@ -1,4 +1,4 @@
-import { MercatorCoordinate } from "./types/MercatorCoordinates";
+import { MercatorCoordinate } from "../../browser/game/mercator/types/MercatorCoordinates";
 
 export default class MercatorProjection {
     static getTileSize(zoomLevel: number) {

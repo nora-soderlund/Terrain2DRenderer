@@ -20,18 +20,19 @@ import CanvasGridAdapter from "./adapters/canvas/CanvasGridAdapter";
     const response = await fetch("../assets/datahub/countries/countries.geojson");
     const result = await response.json();
 
-    const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === "Sweden");
+    const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === "Italy");
+
+    const time = performance.now();
 
     if(!feature)
-      return alert("no sweden feature found :(");
+      return alert("sweden has ceased to exist, rip :(");
 
     const paths = GeoJsonAdapter.getPathsFromFeature(feature, 3, 0);
 
     if(!paths)
-      return alert("no paths :(");
+      return alert("sweden has no land anymore :(");
 
     const canvas = CanvasPathsAdapter.getCanvasFromPaths(paths);
-
     const gridMap = CanvasGridAdapter.getGridMapFromCanvas(canvas);
 
     const testTerrainGrid = new TerrainGrid(gridMap);
@@ -45,6 +46,10 @@ import CanvasGridAdapter from "./adapters/canvas/CanvasGridAdapter";
     const gameGridEntity = new GameGridEntity(new GridCanvas(10));
 
     const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
+
+    const elapsed = performance.now() - time;
+
+    console.log({ elapsed });
 
     document.body.append(gameCanvas.element);
   }

@@ -1,4 +1,4 @@
-import GameCanvas from "../GameCanvas";
+import GameCanvasInterface from "./GameCanvasInterface";
 import { GameEntityPriority } from "./GameEntityPriority";
 
 export default interface GameCanvasEntity {
@@ -6,5 +6,5 @@ export default interface GameCanvasEntity {
     column: number;
     priority: GameEntityPriority;
     
-    draw(gameCanvas: GameCanvas, context: CanvasRenderingContext2D): void;
+    draw(gameCanvas: GameCanvasInterface, context: CanvasRenderingContext2D): void;
 };

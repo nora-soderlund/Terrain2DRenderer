@@ -1,10 +1,28 @@
-import { Feature, FeatureCollection, MultiPolygon, Polygon } from "geojson";
+import { Feature, FeatureCollection, GeoJSON, MultiPolygon, Polygon } from "geojson";
 import MercatorProjection from "../mercator/MercatorProjection";
 import { CanvasPaths } from "../canvas/types/CanvasPaths";
-import { MercatorCoordinate } from "../mercator/types/MercatorCoordinates";
+import { MercatorCoordinate } from "../../browser/game/mercator/types/MercatorCoordinates";
 
 export default class GeoJsonAdapter {
-    static getPathsFromFeatureColection(featureCollection: FeatureCollection, zoomLevel: number, pixelTolerance: number) {
+    static getPathsFromGeoJson(geojson: GeoJSON, zoomLevel: number, pixelTolerance: number) {
+        switch(geojson.type) {
+            case "FeatureCollection":
+                return this.getPathsFromFeatureCollection(geojson, zoomLevel, pixelTolerance);
+
+            case "Feature":
+                return this.getPathsFromFeature(geojson, zoomLevel, pixelTolerance);
+
+            case "MultiPolygon":
+                return this.getPathsFromMultiPolygon(geojson, zoomLevel, pixelTolerance);
+
+            case "Polygon":
+                return this.getPathsFromPolygon(geojson, zoomLevel, pixelTolerance);
+        }
+
+        return null;
+    }
+
+    static getPathsFromFeatureCollection(featureCollection: FeatureCollection, zoomLevel: number, pixelTolerance: number) {
         let canvasPaths: CanvasPaths = {
             paths: []
         };
