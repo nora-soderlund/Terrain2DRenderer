@@ -1,7 +1,8 @@
 import { Feature, FeatureCollection, GeoJSON, MultiPolygon, Polygon } from "geojson";
 import MercatorProjection from "../mercator/MercatorProjection";
 import { CanvasPaths } from "../canvas/types/CanvasPaths";
-import { MercatorCoordinate } from "../../browser/game/mercator/types/MercatorCoordinates";
+import { MercatorPixelCoordinates } from "../../browser/game/mercator/types/MercatorPixelCoordinates";
+import { MercatorCoordinates } from "../../browser/game/mercator/types/MercatorCoordinates";
 
 export default class GeoJsonAdapter {
     static getPathsFromGeoJson(geojson: GeoJSON, zoomLevel: number, pixelTolerance: number) {
@@ -35,7 +36,8 @@ export default class GeoJsonAdapter {
 
             canvasPaths = {
                 paths: canvasPaths.paths.concat(newCanvasPaths.paths),
-                bounds: this.getBiggestBounds(canvasPaths.bounds, newCanvasPaths.bounds)
+                bounds: this.getBiggestBounds(canvasPaths.bounds, newCanvasPaths.bounds),
+                minimumCoordinates: this.getSmallestCoordinates(canvasPaths.minimumCoordinates, newCanvasPaths.minimumCoordinates)
             };
         }
 
@@ -64,7 +66,8 @@ export default class GeoJsonAdapter {
 
             canvasPaths = {
                 paths: canvasPaths.paths.concat(newCanvasPaths.paths),
-                bounds: this.getBiggestBounds(canvasPaths.bounds, newCanvasPaths.bounds)
+                bounds: this.getBiggestBounds(canvasPaths.bounds, newCanvasPaths.bounds),
+                minimumCoordinates: this.getSmallestCoordinates(canvasPaths.minimumCoordinates, newCanvasPaths.minimumCoordinates)
             };
         }
 
@@ -77,11 +80,26 @@ export default class GeoJsonAdapter {
         };
 
         for(let ring of polygon.coordinates) {
-            const path: MercatorCoordinate[] = [];
+            const path: MercatorPixelCoordinates[] = [];
 
             let bounds: CanvasPaths["bounds"] = undefined;
+            let minimumCoordinates: CanvasPaths["minimumCoordinates"] = undefined;
     
             for(let index = 0; index < ring.length; index++) {
+                if(!minimumCoordinates) {
+                    minimumCoordinates = {
+                        latitude: ring[index][0],
+                        longitude: ring[index][1]
+                    };
+                }
+                else {
+                    if(minimumCoordinates.latitude > ring[index][0])
+                        minimumCoordinates.latitude = ring[index][0];
+
+                    if(minimumCoordinates.longitude > ring[index][1])
+                        minimumCoordinates.longitude = ring[index][1];
+                }
+
                 const pixelCoordinate = MercatorProjection.getPixelCoordinatesFromCoordinates(zoomLevel, ring[index][0], ring[index][1]);
     
                 path.push(pixelCoordinate);
@@ -135,6 +153,22 @@ export default class GeoJsonAdapter {
                 if(canvasPaths.bounds.minimumTop > bounds.minimumTop)
                     canvasPaths.bounds.minimumTop = bounds.minimumTop;
             }
+
+            if(minimumCoordinates) {
+                if(!canvasPaths.minimumCoordinates) {
+                    canvasPaths.minimumCoordinates = {
+                        latitude: minimumCoordinates.latitude,
+                        longitude: minimumCoordinates.longitude
+                    };
+                }
+                else {
+                    if(canvasPaths.minimumCoordinates.latitude > minimumCoordinates.latitude)
+                        canvasPaths.minimumCoordinates.latitude = minimumCoordinates.latitude;
+
+                    if(canvasPaths.minimumCoordinates.longitude > minimumCoordinates.longitude)
+                        canvasPaths.minimumCoordinates.longitude = minimumCoordinates.longitude;
+                }
+            }
         }
 
         return canvasPaths;
@@ -158,5 +192,19 @@ export default class GeoJsonAdapter {
         }
 
         return originalBounds ?? newBounds
+    };
+
+    static getSmallestCoordinates(originalCoordinates: CanvasPaths["minimumCoordinates"], newCoordinates: CanvasPaths["minimumCoordinates"]) {
+        if(originalCoordinates && newCoordinates) {
+            if(originalCoordinates.latitude > newCoordinates.latitude)
+                originalCoordinates.latitude = newCoordinates.latitude;
+
+            if(originalCoordinates.longitude > newCoordinates.longitude)
+                originalCoordinates.longitude = newCoordinates.longitude;
+
+            return originalCoordinates;
+        }
+
+        return originalCoordinates ?? newCoordinates
     };
 };

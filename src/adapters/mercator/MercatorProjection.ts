@@ -1,11 +1,12 @@
-import { MercatorCoordinate } from "../../browser/game/mercator/types/MercatorCoordinates";
+import { MercatorCoordinates } from "../../browser/game/mercator/types/MercatorCoordinates";
+import { MercatorWorldCoordinates } from "../../browser/game/mercator/types/MercatorWorldCoordinates";
 
 export default class MercatorProjection {
     static getTileSize(zoomLevel: number) {
         return zoomLevel * 256;
     };
 
-    static getWorldCoordinateProjection(zoomLevel: number, latitude: number, longitude: number): MercatorCoordinate {
+    static getWorldCoordinateProjection(zoomLevel: number, latitude: number, longitude: number): MercatorWorldCoordinates {
         const tileSize = this.getTileSize(zoomLevel);
 
         const latitudeToRadians = ((latitude * Math.PI) / 180);
@@ -17,7 +18,7 @@ export default class MercatorProjection {
         };
     }
 
-    static getPixelCoordinates(zoomLevel: number, worldCoordinate: MercatorCoordinate) {
+    static getPixelCoordinates(zoomLevel: number, worldCoordinate: MercatorWorldCoordinates) {
         return {
             left: worldCoordinate.left * (2 ** zoomLevel),
             top: worldCoordinate.top * (2 ** zoomLevel)

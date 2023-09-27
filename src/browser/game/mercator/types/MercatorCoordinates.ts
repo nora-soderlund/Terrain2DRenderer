@@ -1,4 +1,4 @@
-export type MercatorCoordinate = {
-    left: number;
-    top: number;
+export type MercatorCoordinates = {
+    latitude: number;
+    longitude: number;
 };

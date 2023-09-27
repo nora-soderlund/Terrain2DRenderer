@@ -14,6 +14,11 @@ import GridCanvas from "./core/grid/GridCanvas";
 import GeoJsonAdapter from "./adapters/geojson/GeoJsonAdapter";
 import CanvasPathsAdapter from "./adapters/canvas/CanvasPathsAdapter";
 import CanvasGridAdapter from "./adapters/canvas/CanvasGridAdapter";
+import MercatorGameCanvas from "./browser/game/mercator/MercatorGameCanvas";
+import MercatorGameWaterEntity from "./browser/game/mercator/entities/MercatorGameWaterEntity";
+import MercatorGameGridEntity from "./browser/game/mercator/entities/MercatorGameGridEntity";
+import MercatorGameTerrainEntity from "./browser/game/mercator/entities/MercatorGameTerrainEntity";
+import MercatorAdapter from "./adapters/mercator/MercatorAdapter";
 
 (async () => {
   {
@@ -24,34 +29,27 @@ import CanvasGridAdapter from "./adapters/canvas/CanvasGridAdapter";
 
     const time = performance.now();
 
-    if(!feature)
-      return alert("sweden has ceased to exist, rip :(");
+    const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, 3, 0);
 
-    const paths = GeoJsonAdapter.getPathsFromFeature(feature, 3, 0);
-
-    if(!paths)
-      return alert("sweden has no land anymore :(");
-
-    const canvas = CanvasPathsAdapter.getCanvasFromPaths(paths);
-    const gridMap = CanvasGridAdapter.getGridMapFromCanvas(canvas);
-
-    const testTerrainGrid = new TerrainGrid(gridMap);
-    
+    const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
     const testTerrainTiles = new TerrainTiles(testTerrainGrid);
     const testTerrainTilesCollection = [ testTerrainTiles ];
     const terrainCanvas = new TerrainCanvas(testTerrainTilesCollection, 10, false);
-    const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
+    const gameTerrainEntity = new MercatorGameTerrainEntity(terrainCanvas, mercatorGrid.coordinate);
 
-    const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
-    const gameGridEntity = new GameGridEntity(new GridCanvas(10));
+    const gameWaterEntity = new MercatorGameWaterEntity(new WaterRenderer());
+    const gameGridEntity = new MercatorGameGridEntity(new GridCanvas(10));
 
-    const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
+    const mercatorGameCanvas = new MercatorGameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10, 3);
+    mercatorGameCanvas.setCoordinates(mercatorGrid.coordinate);
+
+    //const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
 
     const elapsed = performance.now() - time;
 
     console.log({ elapsed });
 
-    document.body.append(gameCanvas.element);
+    document.body.append(mercatorGameCanvas.element);
   }
 
   {

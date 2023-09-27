@@ -1,6 +1,7 @@
 import GameCanvasEntity from "../../types/GameCanvasEntity";
-import { MercatorCoordinate } from "./MercatorCoordinates";
+import MercatorGameCanvas from "../MercatorGameCanvas";
+import { MercatorCoordinates } from "./MercatorCoordinates";
 
 export default interface MercatorGameCanvasEntity extends GameCanvasEntity {
-    worldCoordinate: MercatorCoordinate;
+    coordinates: MercatorCoordinates | null;
 };

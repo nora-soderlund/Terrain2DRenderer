@@ -19,7 +19,10 @@ export default class GameGridEntity implements GameCanvasEntity {
         
         this.gridCanvas.render(context.canvas.width, context.canvas.height);
 
-        context.translate((gameCanvas.offset.left % this.gridCanvas.size) - this.gridCanvas.size, (gameCanvas.offset.top % this.gridCanvas.size) - this.gridCanvas.size);
+        const left = (gameCanvas.offset.left % this.gridCanvas.size) - this.gridCanvas.size;
+        const top = (gameCanvas.offset.top % this.gridCanvas.size) - this.gridCanvas.size;
+
+        context.translate(left, top);
 
         context.drawImage(this.gridCanvas.canvas as any, 0, 0);
     };

@@ -1,12 +1,8 @@
 import { GridMap } from "../../../../types/GridMap";
+import { MercatorCoordinates } from "./MercatorCoordinates";
 
 export type MercatorGridMap = {
-    worldCoordinate: {
-        left: number;
-        top: number;
-    };
-
+    coordinate: MercatorCoordinates;
     zoomLevel: number;
-
     map: GridMap;
 };

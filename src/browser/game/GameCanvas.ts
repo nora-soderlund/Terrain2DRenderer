@@ -5,15 +5,24 @@ import GameCanvasInterface from "./types/GameCanvasInterface";
 export default class GameCanvas implements GameCanvasInterface {
     public readonly element = document.createElement("canvas");
     private readonly mouseEvents = new TerrainCanvasMouseEvents(this.element);
+    private readonly entities: GameCanvasEntity[] = [];
 
     public readonly offset = {
         left: 0,
         top: 0
     };
 
-    constructor(private readonly canvasEntities: GameCanvasEntity[] = [], private readonly size: number) {
+    constructor(entities: GameCanvasEntity[], private readonly size: number) {
+        this.addEntities(entities);
+        
         this.requestRender();
     };
+
+    public addEntities(entities: GameCanvasEntity[]): void {
+        this.entities.push(...entities);
+
+        this.entities.sort((a, b) => a.priority - b.priority);
+    }
 
     public requestRender() {
         window.requestAnimationFrame(this.render.bind(this));
@@ -33,9 +42,7 @@ export default class GameCanvas implements GameCanvasInterface {
 
         const context = this.element.getContext("2d")!;
 
-        const entities = this.canvasEntities.sort((a, b) => a.priority - b.priority);
-
-        for(let canvasEntity of this.canvasEntities) {
+        for(let canvasEntity of this.entities) {
             context.save();
 
             context.translate(this.offset.left, this.offset.top);

@@ -11,8 +11,10 @@ export default class MercatorAdapter {
         if(!canvasPaths)
             throw new Error("Could not get paths from the GeoJSON object, unsupported type.");
 
-        if(!canvasPaths.bounds)
+        if(!canvasPaths.bounds || !canvasPaths.minimumCoordinates)
             throw new Error("Cannot process the canvas paths from the GeoJSON without valid bounds.");
+
+        console.log({ position: canvasPaths.minimumCoordinates });
 
         const canvas = CanvasPathsAdapter.getCanvasFromPaths(canvasPaths);
         const gridMap = CanvasGridAdapter.getGridMapFromCanvas(canvas);
@@ -21,10 +23,7 @@ export default class MercatorAdapter {
             map: gridMap,
             zoomLevel,
             
-            worldCoordinate: {
-                left: canvasPaths.bounds.minimumLeft,
-                top: canvasPaths.bounds.minimumTop
-            }
+            coordinate: canvasPaths.minimumCoordinates
         };
     };
 }
