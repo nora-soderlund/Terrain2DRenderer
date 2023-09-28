@@ -20,8 +20,8 @@ export default class MercatorProjection {
 
     static getPixelCoordinates(zoomLevel: number, worldCoordinate: MercatorWorldCoordinates) {
         return {
-            left: worldCoordinate.left * (2 ** zoomLevel),
-            top: worldCoordinate.top * (2 ** zoomLevel)
+            left: Math.round(worldCoordinate.left * (2 ** zoomLevel)),
+            top: Math.round(worldCoordinate.top * (2 ** zoomLevel))
         };
     }
 }

@@ -12,7 +12,7 @@ export default class GameCanvas implements GameCanvasInterface {
         top: 0
     };
 
-    constructor(entities: GameCanvasEntity[], private readonly size: number) {
+    constructor(entities: GameCanvasEntity[], public readonly size: number) {
         this.addEntities(entities);
         
         this.requestRender();

@@ -33,18 +33,16 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
         
         this.worldCoordinatesOffset.left = -pixelCoordinates.left * this.size;
         this.worldCoordinatesOffset.top = -pixelCoordinates.top * this.size;
-
-        console.log({ topLeftPixelCoordinate: worldCoordinates });
     }
 
     public addEntities(entities: MercatorGameCanvasEntity[]) {
         this.entities.push(...entities);
+
+        this.entities.sort((a, b) => a.priority - b.priority);
     }
 
     public requestRender() {
         window.requestAnimationFrame(this.render.bind(this));
-
-        this.entities.sort((a, b) => a.priority - b.priority);
     };
 
     public render() {
@@ -68,10 +66,13 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
             context.translate(canvasEntity.column * this.size, canvasEntity.row * this.size);
 
             if(canvasEntity.coordinates) {
-                const worldCoordinates = MercatorProjection.getWorldCoordinates(this.zoomLevel, canvasEntity.coordinates);
-                const pixelCoordinates = MercatorProjection.getPixelCoordinates(this.zoomLevel, worldCoordinates);
+                if(!canvasEntity.pixelCoordinates) {
+                    const worldCoordinates = MercatorProjection.getWorldCoordinates(this.zoomLevel, canvasEntity.coordinates);
+                    
+                    canvasEntity.pixelCoordinates = MercatorProjection.getPixelCoordinates(this.zoomLevel, worldCoordinates);
+                }
 
-                context.translate(pixelCoordinates.left * this.size, pixelCoordinates.top * this.size);
+                context.translate(canvasEntity.pixelCoordinates.left * this.size, canvasEntity.pixelCoordinates.top * this.size);
             }
 
             canvasEntity.draw(this, context);

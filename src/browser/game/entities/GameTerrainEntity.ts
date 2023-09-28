@@ -13,6 +13,10 @@ export default class GameTerrainEntity implements GameCanvasEntity {
     }
 
     public draw(gameCanvas: GameCanvas, context: CanvasRenderingContext2D): void {
+        const scale = gameCanvas.size / this.terrainCanvas.size;
+        
+        context.scale(scale, scale);
+
         context.drawImage(this.terrainCanvas.canvas as unknown as HTMLCanvasElement, 0, 0);
     };
 }

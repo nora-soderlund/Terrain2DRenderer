@@ -8,7 +8,7 @@ export default class TerrainCanvas {
 
     public readonly canvas = createCanvas(0, 0);
 
-    constructor(private readonly tiles: TerrainTiles[], private readonly size: number, private readonly debug: boolean = false) {
+    constructor(private readonly tiles: TerrainTiles[], public readonly size: number, private readonly debug: boolean = false) {
         this.rows = Math.max(...tiles.map((tiles) => tiles.grid.rows));
         this.columns = Math.max(...tiles.map((tiles) => tiles.grid.columns));
 
@@ -18,6 +18,8 @@ export default class TerrainCanvas {
     private render() {
         this.canvas.width = this.columns * this.size;
         this.canvas.height = this.rows * this.size;
+
+        console.log(this.canvas);
 
         //this.offset.left =  - Math.floor((this.tiles.grid.columns * this.size) / 2);
         //this.offset.top =  - Math.floor((this.tiles.grid.rows * this.size) / 2);

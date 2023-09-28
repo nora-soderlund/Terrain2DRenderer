@@ -27,30 +27,28 @@ import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGame
     const result = await response.json();
 
     const zoomLevel = 3;
-    const tileSize = 3;
+    const tileSize = 100;
 
     const time = performance.now();
 
     const entities: MercatorGameCanvasEntity[] = [];
 
-    for(let administratory of [ "Sweden", "Finland", "Norway" ]) {
+    for(let administratory of [ "Sweden", "Finland" ]) {
       const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === administratory);
       const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 1);
       const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
       const testTerrainTiles = new TerrainTiles(testTerrainGrid);
       const testTerrainTilesCollection = [ testTerrainTiles ];
-      const terrainCanvas = new TerrainCanvas(testTerrainTilesCollection, tileSize, false);
+      const terrainCanvas = new TerrainCanvas(testTerrainTilesCollection, 30, false);
       const gameTerrainEntity = new MercatorGameTerrainEntity(terrainCanvas, mercatorGrid.coordinate);
-
-      console.log(administratory, { coordinates: mercatorGrid.coordinate })
 
       entities.push(gameTerrainEntity);
     }
 
     const gameWaterEntity = new MercatorGameWaterEntity(new WaterRenderer());
-    const gameGridEntity = new MercatorGameGridEntity(new GridCanvas(tileSize));
+    const gameGridEntity = new MercatorGameGridEntity(new GridCanvas(20));
 
-    const mercatorGameCanvas = new MercatorGameCanvas(entities.concat(gameWaterEntity, gameGridEntity), tileSize, zoomLevel);
+    const mercatorGameCanvas = new MercatorGameCanvas(entities.concat(gameWaterEntity, gameGridEntity), 10, zoomLevel);
     mercatorGameCanvas.setCoordinates(entities[0].coordinates!);
 
     //const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
