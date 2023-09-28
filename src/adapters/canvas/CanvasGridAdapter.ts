@@ -3,6 +3,9 @@ import TerrainGrid from "../../core/terrain/TerrainGrid";
 import { Canvas } from "../../types/Canvas";
 import { GridMap } from "../../types/GridMap";
 
+/**
+ * A canvas adapter that extracts the image data to create a 2d grid.
+ */
 export default class CanvasGridAdapter {
     static getGridMapFromCanvas(canvas: Canvas): GridMap {
         const context = canvas.getContext("2d");

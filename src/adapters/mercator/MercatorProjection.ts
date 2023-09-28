@@ -1,6 +1,9 @@
 import { MercatorCoordinates } from "../../browser/game/mercator/types/MercatorCoordinates";
 import { MercatorWorldCoordinates } from "../../browser/game/mercator/types/MercatorWorldCoordinates";
 
+/**
+ * An implementation of the web Mercator projection to convert coordinates to pixel coordinates.
+ */
 export default class MercatorProjection {
     static getTileSize(zoomLevel: number) {
         return zoomLevel * 256;

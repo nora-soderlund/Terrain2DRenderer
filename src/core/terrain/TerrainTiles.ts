@@ -3,6 +3,9 @@ import TerrainGrid from "./TerrainGrid";
 import { TerrainTileDefinition } from "./types/TerrainTileDefinition";
 import { TerrainTileType } from "./types/TerrainTileType";
 
+/**
+ * A data class that provides the visualization logic for the 2d terrain.
+ */
 export default class TerrainTiles {
     public readonly definitions: TerrainTileDefinition[];
 

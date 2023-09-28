@@ -4,6 +4,9 @@ import { CanvasPaths } from "../canvas/types/CanvasPaths";
 import { MercatorPixelCoordinates } from "../../browser/game/mercator/types/MercatorPixelCoordinates";
 import { MercatorCoordinates } from "../../browser/game/mercator/types/MercatorCoordinates";
 
+/**
+ * An adapter to convert GeoJSON data to path polygons, to be used for creating 2d grids. 
+ */
 export default class GeoJsonAdapter {
     static getPathsFromGeoJson(geojson: GeoJSON, zoomLevel: number, pixelTolerance: number) {
         switch(geojson.type) {

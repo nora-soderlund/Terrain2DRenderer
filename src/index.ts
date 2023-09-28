@@ -1,5 +1,4 @@
 import TerrainCanvas from "./core/terrain/TerrainCanvas";
-import TerrainDebugCanvas from "./browser/game/GameDebugCanvas";
 import TerrainGrid from "./core/terrain/TerrainGrid";
 import TerrainTiles from "./core/terrain/TerrainTiles";
 import BrowserTerrainGrid from "./browser/terrain/BrowserTerrainGrid";
@@ -11,9 +10,6 @@ import GameWaterEntity from "./browser/game/entities/GameWaterEntity";
 import WaterRenderer from "./core/water/WaterRenderer";
 import GameGridEntity from "./browser/game/entities/GameGridEntity";
 import GridCanvas from "./core/grid/GridCanvas";
-import GeoJsonAdapter from "./adapters/geojson/GeoJsonAdapter";
-import CanvasPathsAdapter from "./adapters/canvas/CanvasPathsAdapter";
-import CanvasGridAdapter from "./adapters/canvas/CanvasGridAdapter";
 import MercatorGameCanvas from "./browser/game/mercator/MercatorGameCanvas";
 import MercatorGameWaterEntity from "./browser/game/mercator/entities/MercatorGameWaterEntity";
 import MercatorGameGridEntity from "./browser/game/mercator/entities/MercatorGameGridEntity";
@@ -38,8 +34,7 @@ import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGame
       const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 1);
       const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
       const testTerrainTiles = new TerrainTiles(testTerrainGrid);
-      const testTerrainTilesCollection = [ testTerrainTiles ];
-      const terrainCanvas = new TerrainCanvas(testTerrainTilesCollection, 30, false);
+      const terrainCanvas = new TerrainCanvas(testTerrainTiles, 50, false);
       const gameTerrainEntity = new MercatorGameTerrainEntity(terrainCanvas, mercatorGrid.coordinate);
 
       entities.push(gameTerrainEntity);
@@ -48,7 +43,7 @@ import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGame
     const gameWaterEntity = new MercatorGameWaterEntity(new WaterRenderer());
     const gameGridEntity = new MercatorGameGridEntity(new GridCanvas(20));
 
-    const mercatorGameCanvas = new MercatorGameCanvas(entities.concat(gameWaterEntity, gameGridEntity), 10, zoomLevel);
+    const mercatorGameCanvas = new MercatorGameCanvas(entities.concat(gameWaterEntity, gameGridEntity), 2, zoomLevel);
     mercatorGameCanvas.setCoordinates(entities[0].coordinates!);
 
     //const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
@@ -62,11 +57,9 @@ import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGame
 
   {
     const terrainGrid = await BrowserTerrainGrid.fromAsset("../assets/Sweden.json");
-    const terrainTilesCollection = [ new TerrainTiles(terrainGrid) ];
+    const terrainTiles = new TerrainTiles(terrainGrid);
   
-    const terrainCanvas = new TerrainCanvas(terrainTilesCollection, 10, false);
-  
-    console.log(terrainCanvas.canvas);
+    const terrainCanvas = new TerrainCanvas(terrainTiles, 10, false);
   
     const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
     const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
@@ -86,9 +79,8 @@ import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGame
       [ 0, 0, 1, 1, 1, 0, 1, 0, 0 ]
     ]);
     
-    const testTerrainTiles = new TerrainTiles(testTerrainGrid);
-    const testTerrainTilesCollection = [ testTerrainTiles ];
-    const terrainCanvas = new TerrainCanvas(testTerrainTilesCollection, 100, false);
+    const terrainTiles = new TerrainTiles(testTerrainGrid);
+    const terrainCanvas = new TerrainCanvas(terrainTiles, 100, false);
     const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
 
     const gameCanvas = new GameCanvas([ gameTerrainEntity ], 100);

@@ -2,6 +2,9 @@ import { createCanvas } from "canvas";
 import { Canvas } from "../../types/Canvas";
 import { CanvasPaths } from "./types/CanvasPaths";
 
+/**
+ * A Path2D adapter to convert paths to a canvas, to extract image data.
+ */
 export default class CanvasPathsAdapter {
     static getCanvasFromPaths(canvasPaths: CanvasPaths): Canvas {
         if(!canvasPaths.bounds)

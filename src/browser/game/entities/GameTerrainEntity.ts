@@ -17,6 +17,7 @@ export default class GameTerrainEntity implements GameCanvasEntity {
         
         context.scale(scale, scale);
 
-        context.drawImage(this.terrainCanvas.canvas as unknown as HTMLCanvasElement, 0, 0);
+        for(let part of this.terrainCanvas.parts)
+            context.drawImage(part.canvas as unknown as HTMLCanvasElement, part.column * this.terrainCanvas.size, part.row * this.terrainCanvas.size);
     };
 }

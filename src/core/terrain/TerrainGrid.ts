@@ -1,6 +1,9 @@
 import { Direction } from "../../types/Direction";
 import { GridMap } from "../../types/GridMap";
 
+/**
+ * A data class that provides the 2d terrain logic.
+ */
 export default class TerrainGrid {
     public readonly rows: number;
     public readonly columns: number;

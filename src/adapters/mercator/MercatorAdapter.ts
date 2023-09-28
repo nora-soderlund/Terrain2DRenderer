@@ -5,6 +5,9 @@ import CanvasGridAdapter from "../canvas/CanvasGridAdapter";
 import { MercatorGridMap } from "../../browser/game/mercator/types/MercatorGridMap";
 import MercatorProjection from "./MercatorProjection";
 
+/**
+ * An adapter to translate data into grid compatible data.
+ */
 export default class MercatorAdapter {
     static getMercatorGridMapFromGeoJson(geojson: GeoJSON, zoomLevel: number, pixelTolerance: number): MercatorGridMap {
         const canvasPaths = GeoJsonAdapter.getPathsFromGeoJson(geojson, zoomLevel, pixelTolerance);
