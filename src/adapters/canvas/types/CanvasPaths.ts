@@ -6,7 +6,7 @@ export type CanvasPaths = {
         top: number;
     }[][];
 
-    minimumCoordinates?: MercatorCoordinates;
+    northWest?: MercatorCoordinates;
 
     bounds?: {
         minimumLeft: number;

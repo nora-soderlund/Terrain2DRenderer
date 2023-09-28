@@ -15,7 +15,7 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
         top: 0
     };
 
-    public readonly pixelCoordinatesOffset: MercatorPixelCoordinates = {
+    public readonly worldCoordinatesOffset: MercatorPixelCoordinates = {
         left: 0,
         top: 0
     };
@@ -28,13 +28,13 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
     };
 
     public setCoordinates(coordinates: MercatorCoordinates) {
-        console.log({ coordinates });
+        const worldCoordinates = MercatorProjection.getWorldCoordinates(this.zoomLevel, coordinates);
+        const pixelCoordinates = MercatorProjection.getPixelCoordinates(this.zoomLevel, worldCoordinates);
+        
+        this.worldCoordinatesOffset.left = -pixelCoordinates.left * this.size;
+        this.worldCoordinatesOffset.top = -pixelCoordinates.top * this.size;
 
-        const pixelCoordinates = MercatorProjection.getPixelCoordinatesFromCoordinates(this.zoomLevel, coordinates.latitude, coordinates.longitude);
-
-        this.pixelCoordinatesOffset.left = pixelCoordinates.left - ((pixelCoordinates.left % this.size) - this.size);
-        this.pixelCoordinatesOffset.top = pixelCoordinates.top - ((pixelCoordinates.top % this.size) - this.size);
-
+        console.log({ topLeftPixelCoordinate: worldCoordinates });
     }
 
     public addEntities(entities: MercatorGameCanvasEntity[]) {
@@ -53,8 +53,8 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
         this.element.width = bounds.width;
         this.element.height = bounds.height;
 
-        this.offset.left = this.mouseEvents.offset.left + this.pixelCoordinatesOffset.left;
-        this.offset.top = this.mouseEvents.offset.top + this.pixelCoordinatesOffset.top;
+        this.offset.left = this.mouseEvents.offset.left + this.worldCoordinatesOffset.left;
+        this.offset.top = this.mouseEvents.offset.top + this.worldCoordinatesOffset.top;
 
         //this.offset.left =  - Math.floor((this.tiles.grid.columns * this.size) / 2);
         //this.offset.top =  - Math.floor((this.tiles.grid.rows * this.size) / 2);
@@ -68,9 +68,10 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
             context.translate(canvasEntity.column * this.size, canvasEntity.row * this.size);
 
             if(canvasEntity.coordinates) {
-                const pixelCoordinates = MercatorProjection.getPixelCoordinatesFromCoordinates(this.zoomLevel, canvasEntity.coordinates.latitude, canvasEntity.coordinates.longitude);
+                const worldCoordinates = MercatorProjection.getWorldCoordinates(this.zoomLevel, canvasEntity.coordinates);
+                const pixelCoordinates = MercatorProjection.getPixelCoordinates(this.zoomLevel, worldCoordinates);
 
-                context.translate(-pixelCoordinates.left, -pixelCoordinates.top);
+                context.translate(pixelCoordinates.left * this.size, pixelCoordinates.top * this.size);
             }
 
             canvasEntity.draw(this, context);

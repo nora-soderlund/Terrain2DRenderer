@@ -37,7 +37,7 @@ export default class GeoJsonAdapter {
             canvasPaths = {
                 paths: canvasPaths.paths.concat(newCanvasPaths.paths),
                 bounds: this.getBiggestBounds(canvasPaths.bounds, newCanvasPaths.bounds),
-                minimumCoordinates: this.getSmallestCoordinates(canvasPaths.minimumCoordinates, newCanvasPaths.minimumCoordinates)
+                northWest: this.getNorthWestCoordinates(canvasPaths.northWest, newCanvasPaths.northWest)
             };
         }
 
@@ -67,7 +67,7 @@ export default class GeoJsonAdapter {
             canvasPaths = {
                 paths: canvasPaths.paths.concat(newCanvasPaths.paths),
                 bounds: this.getBiggestBounds(canvasPaths.bounds, newCanvasPaths.bounds),
-                minimumCoordinates: this.getSmallestCoordinates(canvasPaths.minimumCoordinates, newCanvasPaths.minimumCoordinates)
+                northWest: this.getNorthWestCoordinates(canvasPaths.northWest, newCanvasPaths.northWest)
             };
         }
 
@@ -83,47 +83,51 @@ export default class GeoJsonAdapter {
             const path: MercatorPixelCoordinates[] = [];
 
             let bounds: CanvasPaths["bounds"] = undefined;
-            let minimumCoordinates: CanvasPaths["minimumCoordinates"] = undefined;
+            let northWest: CanvasPaths["northWest"] = undefined;
     
             for(let index = 0; index < ring.length; index++) {
-                if(!minimumCoordinates) {
-                    minimumCoordinates = {
-                        latitude: ring[index][0],
-                        longitude: ring[index][1]
+                if(!northWest) {
+                    northWest = {
+                        latitude: ring[index][1],
+                        longitude: ring[index][0]
                     };
                 }
                 else {
-                    if(minimumCoordinates.latitude > ring[index][0])
-                        minimumCoordinates.latitude = ring[index][0];
+                    if(northWest.latitude < ring[index][1])
+                        northWest.latitude = ring[index][1];
 
-                    if(minimumCoordinates.longitude > ring[index][1])
-                        minimumCoordinates.longitude = ring[index][1];
+                    if(northWest.longitude > ring[index][0])
+                        northWest.longitude = ring[index][0];
                 }
 
-                const pixelCoordinate = MercatorProjection.getPixelCoordinatesFromCoordinates(zoomLevel, ring[index][0], ring[index][1]);
+                const worldCoordinate = MercatorProjection.getWorldCoordinates(zoomLevel, {
+                    latitude: ring[index][1],
+                    longitude: ring[index][0]
+                });
+                const pixelCoordinates = MercatorProjection.getPixelCoordinates(zoomLevel, worldCoordinate);
     
-                path.push(pixelCoordinate);
+                path.push(pixelCoordinates);
 
                 if(!bounds) {
                     bounds = {
-                        minimumLeft: pixelCoordinate.left,
-                        maximumLeft: pixelCoordinate.left,
-                        minimumTop: pixelCoordinate.top,
-                        maximumTop: pixelCoordinate.top
+                        minimumLeft: pixelCoordinates.left,
+                        maximumLeft: pixelCoordinates.left,
+                        minimumTop: pixelCoordinates.top,
+                        maximumTop: pixelCoordinates.top
                     };
                 }
                 else {
-                    if(pixelCoordinate.left > bounds.maximumLeft)
-                        bounds.maximumLeft = pixelCoordinate.left;
+                    if(pixelCoordinates.left > bounds.maximumLeft)
+                        bounds.maximumLeft = pixelCoordinates.left;
         
-                    if(pixelCoordinate.top > bounds.maximumTop)
-                        bounds.maximumTop = pixelCoordinate.top;
+                    if(pixelCoordinates.top > bounds.maximumTop)
+                        bounds.maximumTop = pixelCoordinates.top;
         
-                    if(pixelCoordinate.left < bounds.minimumLeft)
-                        bounds.minimumLeft = pixelCoordinate.left;
+                    if(pixelCoordinates.left < bounds.minimumLeft)
+                        bounds.minimumLeft = pixelCoordinates.left;
         
-                    if(pixelCoordinate.top < bounds.minimumTop)
-                        bounds.minimumTop = pixelCoordinate.top;
+                    if(pixelCoordinates.top < bounds.minimumTop)
+                        bounds.minimumTop = pixelCoordinates.top;
                 }
             }
 
@@ -154,19 +158,19 @@ export default class GeoJsonAdapter {
                     canvasPaths.bounds.minimumTop = bounds.minimumTop;
             }
 
-            if(minimumCoordinates) {
-                if(!canvasPaths.minimumCoordinates) {
-                    canvasPaths.minimumCoordinates = {
-                        latitude: minimumCoordinates.latitude,
-                        longitude: minimumCoordinates.longitude
+            if(northWest) {
+                if(!canvasPaths.northWest) {
+                    canvasPaths.northWest = {
+                        latitude: northWest.latitude,
+                        longitude: northWest.longitude
                     };
                 }
                 else {
-                    if(canvasPaths.minimumCoordinates.latitude > minimumCoordinates.latitude)
-                        canvasPaths.minimumCoordinates.latitude = minimumCoordinates.latitude;
+                    if(canvasPaths.northWest.latitude < northWest.latitude)
+                        canvasPaths.northWest.latitude = northWest.latitude;
 
-                    if(canvasPaths.minimumCoordinates.longitude > minimumCoordinates.longitude)
-                        canvasPaths.minimumCoordinates.longitude = minimumCoordinates.longitude;
+                    if(canvasPaths.northWest.longitude > northWest.longitude)
+                        canvasPaths.northWest.longitude = northWest.longitude;
                 }
             }
         }
@@ -194,9 +198,9 @@ export default class GeoJsonAdapter {
         return originalBounds ?? newBounds
     };
 
-    static getSmallestCoordinates(originalCoordinates: CanvasPaths["minimumCoordinates"], newCoordinates: CanvasPaths["minimumCoordinates"]) {
+    static getNorthWestCoordinates(originalCoordinates: CanvasPaths["northWest"], newCoordinates: CanvasPaths["northWest"]) {
         if(originalCoordinates && newCoordinates) {
-            if(originalCoordinates.latitude > newCoordinates.latitude)
+            if(originalCoordinates.latitude < newCoordinates.latitude)
                 originalCoordinates.latitude = newCoordinates.latitude;
 
             if(originalCoordinates.longitude > newCoordinates.longitude)

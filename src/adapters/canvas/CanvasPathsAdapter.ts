@@ -7,7 +7,7 @@ export default class CanvasPathsAdapter {
         if(!canvasPaths.bounds)
             throw new Error("There's no bounds in the canvas paths!");
 
-        const width = (canvasPaths.bounds.maximumLeft - canvasPaths.bounds.minimumLeft) * .5;
+        const width = canvasPaths.bounds.maximumLeft - canvasPaths.bounds.minimumLeft;
         const height = canvasPaths.bounds.maximumTop - canvasPaths.bounds.minimumTop;
 
         const canvas = createCanvas(width, height);
@@ -15,8 +15,8 @@ export default class CanvasPathsAdapter {
 
         context.strokeStyle = context.fillStyle = "white";
 
-        context.scale(-.5, -1);
-        context.translate(-canvasPaths.bounds.minimumLeft - (width * 2), -canvasPaths.bounds.minimumTop - height);
+        context.scale(1, 1);
+        context.translate(-canvasPaths.bounds.minimumLeft, -canvasPaths.bounds.minimumTop);
             
         for(let path of canvasPaths.paths) {
             context.beginPath();

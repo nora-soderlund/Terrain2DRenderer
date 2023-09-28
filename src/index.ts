@@ -19,29 +19,39 @@ import MercatorGameWaterEntity from "./browser/game/mercator/entities/MercatorGa
 import MercatorGameGridEntity from "./browser/game/mercator/entities/MercatorGameGridEntity";
 import MercatorGameTerrainEntity from "./browser/game/mercator/entities/MercatorGameTerrainEntity";
 import MercatorAdapter from "./adapters/mercator/MercatorAdapter";
+import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGameCanvasEntity";
 
 (async () => {
   {
     const response = await fetch("../assets/datahub/countries/countries.geojson");
     const result = await response.json();
 
-    const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === "Italy");
+    const zoomLevel = 3;
+    const tileSize = 3;
 
     const time = performance.now();
 
-    const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, 3, 0);
+    const entities: MercatorGameCanvasEntity[] = [];
 
-    const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
-    const testTerrainTiles = new TerrainTiles(testTerrainGrid);
-    const testTerrainTilesCollection = [ testTerrainTiles ];
-    const terrainCanvas = new TerrainCanvas(testTerrainTilesCollection, 10, false);
-    const gameTerrainEntity = new MercatorGameTerrainEntity(terrainCanvas, mercatorGrid.coordinate);
+    for(let administratory of [ "Sweden", "Finland", "Norway" ]) {
+      const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === administratory);
+      const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 1);
+      const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
+      const testTerrainTiles = new TerrainTiles(testTerrainGrid);
+      const testTerrainTilesCollection = [ testTerrainTiles ];
+      const terrainCanvas = new TerrainCanvas(testTerrainTilesCollection, tileSize, false);
+      const gameTerrainEntity = new MercatorGameTerrainEntity(terrainCanvas, mercatorGrid.coordinate);
+
+      console.log(administratory, { coordinates: mercatorGrid.coordinate })
+
+      entities.push(gameTerrainEntity);
+    }
 
     const gameWaterEntity = new MercatorGameWaterEntity(new WaterRenderer());
-    const gameGridEntity = new MercatorGameGridEntity(new GridCanvas(10));
+    const gameGridEntity = new MercatorGameGridEntity(new GridCanvas(tileSize));
 
-    const mercatorGameCanvas = new MercatorGameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10, 3);
-    mercatorGameCanvas.setCoordinates(mercatorGrid.coordinate);
+    const mercatorGameCanvas = new MercatorGameCanvas(entities.concat(gameWaterEntity, gameGridEntity), tileSize, zoomLevel);
+    mercatorGameCanvas.setCoordinates(entities[0].coordinates!);
 
     //const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
 
