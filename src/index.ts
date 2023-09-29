@@ -11,8 +11,6 @@ import WaterRenderer from "./core/water/WaterRenderer";
 import GameGridEntity from "./browser/game/entities/GameGridEntity";
 import GridCanvas from "./core/grid/GridCanvas";
 import MercatorGameCanvas from "./browser/game/mercator/MercatorGameCanvas";
-import MercatorGameWaterEntity from "./browser/game/mercator/entities/MercatorGameWaterEntity";
-import MercatorGameGridEntity from "./browser/game/mercator/entities/MercatorGameGridEntity";
 import MercatorGameTerrainEntity from "./browser/game/mercator/entities/MercatorGameTerrainEntity";
 import MercatorAdapter from "./adapters/mercator/MercatorAdapter";
 import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGameCanvasEntity";
@@ -24,16 +22,16 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
     const response = await fetch("../assets/datahub/countries/countries.geojson");
     const result = await response.json();
 
-    const zoomLevel = 2;
-    const tileSize = 50;
+    const zoomLevel = 3;
+    const tileSize = 20;
 
     const time = performance.now();
 
     const entities: MercatorGameCanvasEntity[] = [];
 
-    for(let administratory of [ "Sweden", "Finland", "Norway" ]) {
+    for(let administratory of [ "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine" ]) {
       const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === administratory);
-      const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 1);
+      const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 2);
       const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
       
       const terrainTileRenderer = new TerrainTileRenderer(tileSize);
@@ -47,11 +45,11 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
       entities.push(gameTerrainEntity);
     }
 
-    const gameWaterEntity = new MercatorGameWaterEntity(new WaterRenderer());
-    const gameGridEntity = new MercatorGameGridEntity(new GridCanvas());
+    const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
+    const gameGridEntity = new GameGridEntity(new GridCanvas());
 
-    const mercatorGameCanvas = new MercatorGameCanvas(entities.concat(gameWaterEntity, gameGridEntity), 5, zoomLevel);
-    mercatorGameCanvas.setCoordinates(entities[0].coordinates!);
+    const mercatorGameCanvas = new MercatorGameCanvas(entities.concat(gameWaterEntity, gameGridEntity), 2, zoomLevel);
+    mercatorGameCanvas.setCoordinates(entities[1].coordinates!);
 
     //const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
 
