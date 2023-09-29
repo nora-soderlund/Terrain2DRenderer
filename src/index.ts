@@ -41,9 +41,9 @@ import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGame
     }
 
     const gameWaterEntity = new MercatorGameWaterEntity(new WaterRenderer());
-    const gameGridEntity = new MercatorGameGridEntity(new GridCanvas(20));
+    const gameGridEntity = new MercatorGameGridEntity(new GridCanvas());
 
-    const mercatorGameCanvas = new MercatorGameCanvas(entities.concat(gameWaterEntity, gameGridEntity), 2, zoomLevel);
+    const mercatorGameCanvas = new MercatorGameCanvas(entities.concat(gameWaterEntity, gameGridEntity), 5, zoomLevel);
     mercatorGameCanvas.setCoordinates(entities[0].coordinates!);
 
     //const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
@@ -63,7 +63,7 @@ import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGame
   
     const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
     const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
-    const gameGridEntity = new GameGridEntity(new GridCanvas(10));
+    const gameGridEntity = new GameGridEntity(new GridCanvas());
     
     const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
   

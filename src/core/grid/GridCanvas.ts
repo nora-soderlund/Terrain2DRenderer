@@ -3,15 +3,15 @@ import GridRenderer from "./GridRenderer";
 
 export default class GridCanvas {
     public readonly canvas = createCanvas(0, 0);
-    private readonly gridRenderer: GridRenderer;
 
-    constructor(public readonly size: number, private readonly debug: boolean = false) {
-        this.gridRenderer = new GridRenderer(this.size);
+    constructor() {
     };
 
-    public render(width: number, height: number) {
-        width = Math.ceil(width / this.size) * this.size;
-        height = Math.ceil(height / this.size) * this.size;
+    public render(size: number, width: number, height: number) {
+        const gridRenderer = new GridRenderer(size);
+
+        width = Math.ceil(width / size) * size;
+        height = Math.ceil(height / size) * size;
 
         if(this.canvas.width === width && this.canvas.height === height) {
             return;
@@ -22,6 +22,6 @@ export default class GridCanvas {
 
         const context = this.canvas.getContext("2d")!;
 
-        this.gridRenderer.draw(context);
+        gridRenderer.draw(context);
     };
 };

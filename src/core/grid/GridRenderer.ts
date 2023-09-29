@@ -1,7 +1,7 @@
 import { CanvasRenderingContext2D } from "canvas";
 
 export default class GridRenderer {
-    constructor(private readonly size: number) {
+    constructor(public size: number) {
 
     }
 
