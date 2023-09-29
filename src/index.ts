@@ -23,20 +23,26 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
     const result = await response.json();
 
     const zoomLevel = 3;
-    const tileSize = 20;
+    const tileSize = 10;
 
     const time = performance.now();
 
     const entities: MercatorGameCanvasEntity[] = [];
 
-    for(let country of [ "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine" ]) {
+    const terrainTileRenderer = new TerrainTileRenderer(tileSize);
+    const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
+
+
+    //for(let feature of result.features.slice(0, 10)) {
+    for(let country of [ "Russia" ]) {
+    //for(let country of [ "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine" ]) {
       const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === country);
+
+      console.debug(feature.properties["ADMIN"]);
+
       const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 2);
       const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
       
-      const terrainTileRenderer = new TerrainTileRenderer(tileSize);
-      const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
-
       const terrainTiles = new TerrainTiles(testTerrainGrid);
 
       const terrainCanvas = new TerrainCanvas(terrainTileKit, terrainTiles, tileSize, false);

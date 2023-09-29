@@ -52,56 +52,62 @@ export default class TerrainTileKit {
 
     // TODO: remove MercatorCoordinate
     public draw(context: CanvasRenderingContext2D, offset: MercatorPixelCoordinates, type: TerrainTileType, row: number, column: number, direction: Direction) {
-        const left = column * this.terrainTileRenderer.size;
-        const top = row * this.terrainTileRenderer.size;
+        let left = column * this.terrainTileRenderer.size;
+        let top = row * this.terrainTileRenderer.size;
+
+        left += offset.left;
+        top += offset.top;
+
+        left += this.halfSize;
+        top += this.halfSize;
+
+        const centerOffset = -(this.terrainTileRenderer.size * 1.5);
 
         context.save();
 
-        context.translate(offset.left, offset.top);
         context.translate(left, top);
-        context.translate(this.halfSize, this.halfSize);
 
         context.rotate((Math.PI / 180) * (180 + direction));
 
         switch(type) {
             case TerrainTileType.FlatTile: {
-                context.drawImage(this.flatTile, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.flatTile, centerOffset, centerOffset);
 
                 break;
             }
 
             case TerrainTileType.FlatTileWithLeftFlatEdge: {
-                context.drawImage(this.flatTileWithLeftFlatEdge, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.flatTileWithLeftFlatEdge, centerOffset, centerOffset);
 
                 break;
             }
 
             case TerrainTileType.FlatTileWithRightFlatEdge: {
-                context.drawImage(this.flatTileWithRightFlatEdge, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.flatTileWithRightFlatEdge, centerOffset, centerOffset);
 
                 break;
             }
 
             case TerrainTileType.FlatTileWithLeftInsideCornerEdge: {
-                context.drawImage(this.flatTileWithLeftInsideCornerEdge, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.flatTileWithLeftInsideCornerEdge, centerOffset, centerOffset);
 
                 break;
             }
 
             case TerrainTileType.FlatTileWithRightInsideCornerEdge: {
-                context.drawImage(this.flatTileWithRightInsideCornerEdge, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.flatTileWithRightInsideCornerEdge, centerOffset, centerOffset);
 
                 break;
             }
 
             case TerrainTileType.FlatTileWithLeftOutsideCornerEdge: {
-                context.drawImage(this.flatTileWithLeftOutsideCornerEdge, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.flatTileWithLeftOutsideCornerEdge, centerOffset, centerOffset);
 
                 break;
             }
 
             case TerrainTileType.FlatTileWithRightOutsideCornerEdge: {
-                context.drawImage(this.flatTileWithRightOutsideCornerEdge, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.flatTileWithRightOutsideCornerEdge, centerOffset, centerOffset);
 
                 break;
             }
@@ -109,31 +115,31 @@ export default class TerrainTileKit {
             case TerrainTileType.SlopedTile: {
                 context.rotate((Math.PI / 180) * -45);
 
-                context.drawImage(this.slopedTile, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.slopedTile, centerOffset, centerOffset);
 
                 break;
             }
             
             case TerrainTileType.SlopedTileWithLeftFlatEdge: {
-                context.drawImage(this.slopedTileWithLeftFlatEdge, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.slopedTileWithLeftFlatEdge, centerOffset, centerOffset);
 
                 break;
             }
             
             case TerrainTileType.SlopedTileWithRightFlatEdge: {
-                context.drawImage(this.slopedTileWithRightFlatEdge, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.slopedTileWithRightFlatEdge, centerOffset, centerOffset);
 
                 break;
             }
             
             case TerrainTileType.SlopedTileWithRightOutsideCornerEdge: {
-                context.drawImage(this.slopedTileWithRightOutsideCornerEdge, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.slopedTileWithRightOutsideCornerEdge, centerOffset, centerOffset);
 
                 break;
             }
             
             case TerrainTileType.SlopedTileWithLeftOutsideCornerEdge: {
-                context.drawImage(this.slopedTileWithLeftOutsideCornerEdge, -this.terrainTileRenderer.size * 1.5, -this.terrainTileRenderer.size * 1.5);
+                context.drawImage(this.slopedTileWithLeftOutsideCornerEdge, centerOffset, centerOffset);
 
                 break;
             }

@@ -10,6 +10,8 @@ import MercatorProjection from "./MercatorProjection";
  */
 export default class MercatorAdapter {
     static getMercatorGridMapFromGeoJson(geojson: GeoJSON, zoomLevel: number, pixelTolerance: number): MercatorGridMap {
+        console.time("getMercatorGridMapFromGeoJson");
+
         const canvasPaths = GeoJsonAdapter.getPathsFromGeoJson(geojson, zoomLevel, pixelTolerance);
 
         if(!canvasPaths)
@@ -20,6 +22,8 @@ export default class MercatorAdapter {
 
         const canvas = CanvasPathsAdapter.getCanvasFromPaths(canvasPaths);
         const gridMap = CanvasGridAdapter.getGridMapFromCanvas(canvas);
+
+        console.timeEnd("getMercatorGridMapFromGeoJson");
 
         return {
             map: gridMap,

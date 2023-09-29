@@ -19,6 +19,7 @@ export default class TerrainCanvas {
     private render() {
         this.parts.length = 0;
 
+        console.time("TerrainCanvas");
 
         const widthPerPart = Math.floor(2000 / this.size);
         const heightPerPart = Math.floor(2000 / this.size);
@@ -48,10 +49,8 @@ export default class TerrainCanvas {
     
             for(let tileDefinition of definitions) {
                 this.terrainTileKit.draw(context, offset, tileDefinition.type, tileDefinition.row, tileDefinition.column, tileDefinition.direction);
-            }
-    
-            for(let tileDefinition of definitions) {
-                this.terrainTileKit.draw(context, offset, TerrainTileType.DebugArrow, tileDefinition.row, tileDefinition.column, tileDefinition.direction);
+
+                //this.terrainTileKit.draw(context, offset, TerrainTileType.DebugArrow, tileDefinition.row, tileDefinition.column, tileDefinition.direction);
             }
 
             this.parts.push({
@@ -64,6 +63,10 @@ export default class TerrainCanvas {
                 height
             });
         }
+
+        console.timeEnd("TerrainCanvas");
+
+        console.debug(`${this.parts.length} parts were created`);
 
         return this.parts;
     };

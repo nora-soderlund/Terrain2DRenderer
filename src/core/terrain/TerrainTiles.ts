@@ -10,7 +10,11 @@ export default class TerrainTiles {
     public readonly definitions: TerrainTileDefinition[];
 
     constructor(public readonly grid: TerrainGrid) {
+        console.time("TerrainTiles");
+        
         this.definitions = this.getTiles();
+
+        console.timeEnd("TerrainTiles");
     }
 
     private getTiles() {
@@ -22,30 +26,22 @@ export default class TerrainTiles {
                 continue;
 
             if(this.grid.isTileSlope(row, column)) {
-                for(let direction = 45; direction < 360; direction += 90) {
-                    if(this.grid.isTileByDirectionFlat(row, column, (direction - 45) + Direction.East))
-                        continue;
+                const direction = this.grid.getTileSlopeDirection(row, column);
 
-                    if(!this.grid.isTileByDirectionFlat(row, column, (direction - 45) + Direction.South))
-                        continue;
+                tiles.push(this.getSlopedTile(row, column, direction));
 
-                    tiles.push(this.getSlopedTile(row, column, direction));
+                if(this.shouldSlopedTileHaveLeftFlatEdge(row, column, direction - 45))
+                    tiles.push(this.getSlopedTileLeftFlatEdge(row, column, direction))
 
-                    if(this.shouldSlopedTileHaveLeftFlatEdge(row, column, direction - 45))
-                        tiles.push(this.getSlopedTileLeftFlatEdge(row, column, direction))
+                if(this.shouldSlopedTileHaveLeftOutsideCornerEdge(row, column, direction - 45))
+                    tiles.push(this.getSlopedTileLeftOutsideCornerEdge(row, column, direction))
 
-                    if(this.shouldSlopedTileHaveLeftOutsideCornerEdge(row, column, direction - 45))
-                        tiles.push(this.getSlopedTileLeftOutsideCornerEdge(row, column, direction))
+                if(this.shouldSlopedTileHaveRightFlatEdge(row, column, direction - 45))
+                    tiles.push(this.getSlopedTileRightFlatEdge(row, column, direction))
 
-                    if(this.shouldSlopedTileHaveRightFlatEdge(row, column, direction - 45))
-                        tiles.push(this.getSlopedTileRightFlatEdge(row, column, direction))
+                if(this.shouldSlopedTileHaveRightOutsideCornerEdge(row, column, direction - 45))
+                    tiles.push(this.getSlopedTileRightOutsideCornerEdge(row, column, direction))
 
-                    if(this.shouldSlopedTileHaveRightOutsideCornerEdge(row, column, direction - 45))
-                        tiles.push(this.getSlopedTileRightOutsideCornerEdge(row, column, direction))
-
-                    break;
-                }
-                
                 continue;
             }
 
@@ -158,9 +154,6 @@ export default class TerrainTiles {
             return false;
         
         if(!this.grid.isTileByDirectionWater(row, column, direction + Direction.East))
-            return false;
-
-        if(this.shouldTileHaveRightOutsideCornerEdge(row, column, direction))
             return false;
 
         return true;
