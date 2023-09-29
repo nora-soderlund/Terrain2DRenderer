@@ -29,8 +29,8 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
 
     const entities: MercatorGameCanvasEntity[] = [];
 
-    for(let administratory of [ "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine" ]) {
-      const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === administratory);
+    for(let country of [ "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine" ]) {
+      const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === country);
       const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 2);
       const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
       
