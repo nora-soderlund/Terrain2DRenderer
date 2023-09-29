@@ -1,3 +1,3 @@
-import { CanvasRenderingContext2D as NodeCanvasRenderingContext2D } from "canvas";
+import { Canvas, CanvasRenderingContext2D as NodeCanvasRenderingContext2D } from "canvas";
 
-export type Canvas2DContext = CanvasRenderingContext2D | NodeCanvasRenderingContext2D;
+export type Canvas2DContext = (CanvasRenderingContext2D | NodeCanvasRenderingContext2D);

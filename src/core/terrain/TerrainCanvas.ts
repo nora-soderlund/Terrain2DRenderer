@@ -3,6 +3,8 @@ import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
 import TerrainTiles from "./TerrainTiles";
 import { createCanvas } from "canvas";
 import { TerrainCanvasPart } from "./types/TerrainCanvasPart";
+import TerrainTileKit from "./TerrainTileKit";
+import { TerrainTileType } from "./types/TerrainTileType";
 
 /**
  * A canvas renderer that combines the visualiztion logic.
@@ -10,7 +12,7 @@ import { TerrainCanvasPart } from "./types/TerrainCanvasPart";
 export default class TerrainCanvas {
     public readonly parts: TerrainCanvasPart[] = [];
 
-    constructor(private readonly tiles: TerrainTiles, public readonly size: number, private readonly debug: boolean = false) {
+    constructor(private readonly terrainTileKit: TerrainTileKit, private readonly tiles: TerrainTiles, public readonly size: number, private readonly debug: boolean = false) {
         this.render();
     };
 
@@ -34,8 +36,6 @@ export default class TerrainCanvas {
                 top: -((row - 1) * this.size)
             };
     
-            const terrainTileRenderer = new TerrainTileRenderer(context, this.size, offset, this.debug);
-
             const definitions = this.tiles.definitions.filter((definition) => {
                 if(definition.row < (row - 1) || definition.row > ((row - 1) + height))
                     return false;
@@ -47,11 +47,11 @@ export default class TerrainCanvas {
             });
     
             for(let tileDefinition of definitions) {
-                terrainTileRenderer.draw(tileDefinition.type, tileDefinition.row, tileDefinition.column, tileDefinition.direction);
+                this.terrainTileKit.draw(context, offset, tileDefinition.type, tileDefinition.row, tileDefinition.column, tileDefinition.direction);
             }
     
             for(let tileDefinition of definitions) {
-                terrainTileRenderer.drawDebugArrow(tileDefinition.row, tileDefinition.column, tileDefinition.direction);
+                this.terrainTileKit.draw(context, offset, TerrainTileType.DebugArrow, tileDefinition.row, tileDefinition.column, tileDefinition.direction);
             }
 
             this.parts.push({

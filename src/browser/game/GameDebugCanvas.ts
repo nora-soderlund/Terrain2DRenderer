@@ -3,6 +3,8 @@ import TerrainGridRenderer from "../../core/grid/GridRenderer";
 import TerrainTileRenderer from "../../core/terrain/renderers/TerrainTileRenderer";
 import GameCanvasMouseEvents from "./events/GameCanvasMouseEvents";
 import { CanvasRenderingContext2D } from "canvas";
+import TerrainTileKit from "../../core/terrain/TerrainTileKit";
+import { TerrainTileType } from "../../core/terrain/types/TerrainTileType";
 
 export default class GameDebugCanvas {
     public readonly element = document.createElement("canvas");
@@ -33,29 +35,35 @@ export default class GameDebugCanvas {
 
         const context = this.element.getContext("2d")! as unknown as CanvasRenderingContext2D;
 
-        const terrainTileRenderer = new TerrainTileRenderer(context, this.size, this.offset);
+        const terrainTileRenderer = new TerrainTileRenderer(this.size);
+        const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
+
+        const offset = {
+            left: 0,
+            top: 0
+        };
 
         for(let direction = 0; direction < 4; direction++) {
             for(let index = 0; index < 14; index += 2)
-                terrainTileRenderer.drawFlatTile(1 + (direction * 2), index, direction * 90);
+                terrainTileKit.draw(context, offset, TerrainTileType.FlatTile, 1 + (direction * 2), index, direction * 90);
     
-            terrainTileRenderer.drawFlatTileWithLeftFlatEdge(1 + (direction * 2), 2, direction * 90);
-            terrainTileRenderer.drawFlatTileWithRightFlatEdge(1 + (direction * 2), 4, direction * 90);
+            terrainTileKit.draw(context, offset, TerrainTileType.FlatTileWithLeftFlatEdge, 1 + (direction * 2), 2, direction * 90);
+            terrainTileKit.draw(context, offset, TerrainTileType.FlatTileWithRightFlatEdge, 1 + (direction * 2), 4, direction * 90);
             
-            terrainTileRenderer.drawFlatTileWithLeftInsideCornerEdge(1 + (direction * 2), 6, direction * 90);
-            terrainTileRenderer.drawFlatTileWithRightInsideCornerEdge(1 + (direction * 2), 8, direction * 90);
+            terrainTileKit.draw(context, offset, TerrainTileType.FlatTileWithLeftInsideCornerEdge, 1 + (direction * 2), 6, direction * 90);
+            terrainTileKit.draw(context, offset, TerrainTileType.FlatTileWithRightInsideCornerEdge, 1 + (direction * 2), 8, direction * 90);
             
-            terrainTileRenderer.drawFlatTileWithLeftOutsideCornerEdge(1 + (direction * 2), 10, direction * 90);
-            terrainTileRenderer.drawFlatTileWithRightOutsideCornerEdge(1 + (direction * 2), 12, direction * 90);
+            terrainTileKit.draw(context, offset, TerrainTileType.FlatTileWithLeftOutsideCornerEdge, 1 + (direction * 2), 10, direction * 90);
+            terrainTileKit.draw(context, offset, TerrainTileType.FlatTileWithRightOutsideCornerEdge, 1 + (direction * 2), 12, direction * 90);
 
             for(let index = 14; index < 24; index += 2)
-                terrainTileRenderer.drawSlopedTile(1 + (direction * 2), index, (direction * 90) + 45);
+                terrainTileKit.draw(context, offset, TerrainTileType.SlopedTile, 1 + (direction * 2), index, (direction * 90) + 45);
 
-            terrainTileRenderer.drawSlopedTileWithLeftFlatEdge(1 + (direction * 2), 16, (direction * 90) + 45);
-            terrainTileRenderer.drawSlopedTileWithRightFlatEdge(1 + (direction * 2), 18, (direction * 90) + 45);
+            terrainTileKit.draw(context, offset, TerrainTileType.SlopedTileWithLeftFlatEdge, 1 + (direction * 2), 16, (direction * 90) + 45);
+            terrainTileKit.draw(context, offset, TerrainTileType.SlopedTileWithRightFlatEdge, 1 + (direction * 2), 18, (direction * 90) + 45);
 
-            terrainTileRenderer.drawSlopedTileWithLeftOutsideCornerEdge(1 + (direction * 2), 20, (direction * 90) + 45);
-            terrainTileRenderer.drawSlopedTileWithRightOutsideCornerEdge(1 + (direction * 2), 22, (direction * 90) + 45);
+            terrainTileKit.draw(context, offset, TerrainTileType.SlopedTileWithLeftOutsideCornerEdge, 1 + (direction * 2), 20, (direction * 90) + 45);
+            terrainTileKit.draw(context, offset, TerrainTileType.SlopedTileWithRightOutsideCornerEdge, 1 + (direction * 2), 22, (direction * 90) + 45);
         }
 
         this.requestRender();

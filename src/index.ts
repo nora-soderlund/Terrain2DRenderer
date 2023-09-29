@@ -16,25 +16,32 @@ import MercatorGameGridEntity from "./browser/game/mercator/entities/MercatorGam
 import MercatorGameTerrainEntity from "./browser/game/mercator/entities/MercatorGameTerrainEntity";
 import MercatorAdapter from "./adapters/mercator/MercatorAdapter";
 import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGameCanvasEntity";
+import TerrainTileKit from "./core/terrain/TerrainTileKit";
+import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
 
 (async () => {
   {
     const response = await fetch("../assets/datahub/countries/countries.geojson");
     const result = await response.json();
 
-    const zoomLevel = 3;
-    const tileSize = 100;
+    const zoomLevel = 2;
+    const tileSize = 50;
 
     const time = performance.now();
 
     const entities: MercatorGameCanvasEntity[] = [];
 
-    for(let administratory of [ "Sweden", "Finland" ]) {
+    for(let administratory of [ "Sweden", "Finland", "Norway" ]) {
       const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === administratory);
       const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 1);
       const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
-      const testTerrainTiles = new TerrainTiles(testTerrainGrid);
-      const terrainCanvas = new TerrainCanvas(testTerrainTiles, 50, false);
+      
+      const terrainTileRenderer = new TerrainTileRenderer(tileSize);
+      const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
+
+      const terrainTiles = new TerrainTiles(testTerrainGrid);
+
+      const terrainCanvas = new TerrainCanvas(terrainTileKit, terrainTiles, tileSize, false);
       const gameTerrainEntity = new MercatorGameTerrainEntity(terrainCanvas, mercatorGrid.coordinate);
 
       entities.push(gameTerrainEntity);
@@ -59,7 +66,10 @@ import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGame
     const terrainGrid = await BrowserTerrainGrid.fromAsset("../assets/Sweden.json");
     const terrainTiles = new TerrainTiles(terrainGrid);
   
-    const terrainCanvas = new TerrainCanvas(terrainTiles, 10, false);
+    const terrainTileRenderer = new TerrainTileRenderer(10);
+    const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
+
+    const terrainCanvas = new TerrainCanvas(terrainTileKit, terrainTiles, 10, false);
   
     const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
     const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
@@ -78,9 +88,12 @@ import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGame
       [ 0, 0, 0, 1, 0, 1, 1, 1, 1 ],
       [ 0, 0, 1, 1, 1, 0, 1, 0, 0 ]
     ]);
+  
+    const terrainTileRenderer = new TerrainTileRenderer(100);
+    const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
     
     const terrainTiles = new TerrainTiles(testTerrainGrid);
-    const terrainCanvas = new TerrainCanvas(terrainTiles, 100, false);
+    const terrainCanvas = new TerrainCanvas(terrainTileKit, terrainTiles, 100, false);
     const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
 
     const gameCanvas = new GameCanvas([ gameTerrainEntity ], 100);

@@ -16,5 +16,7 @@ export enum TerrainTileType {
     SlopedTileWithRightFlatEdge,
 
     SlopedTileWithRightOutsideCornerEdge,
-    SlopedTileWithLeftOutsideCornerEdge
+    SlopedTileWithLeftOutsideCornerEdge,
+
+    DebugArrow
 };
