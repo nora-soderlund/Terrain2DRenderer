@@ -1,7 +1,7 @@
-import { Canvas } from "../../../types/Canvas";
+import { CanvasInstance } from "../../../utils/Canvas";
 
 export type TerrainCanvasPart = {
-    canvas: Canvas;
+    canvas: CanvasInstance;
 
     row: number;
     column: number;

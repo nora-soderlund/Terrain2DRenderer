@@ -3,9 +3,10 @@ import TerrainTileKit from "./core/terrain/TerrainTileKit";
 import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
 import { CanvasRenderingContext2D, createCanvas } from "canvas";
 import { TerrainTileType } from "./core/terrain/types/TerrainTileType";
+import { Canvas2DContext } from "./types/Canvas2DContext";
 
 export default class DebugCanvas {
-    public static render(context: CanvasRenderingContext2D, size: number) {
+    public static render(context: Canvas2DContext, size: number) {
         context.canvas.width = 25 * size;
         context.canvas.height = 9 * size;
 

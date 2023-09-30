@@ -1,16 +1,13 @@
-import { createCanvas } from "canvas";
+import { ImageData, createCanvas } from "canvas";
 import TerrainGrid from "../../core/terrain/TerrainGrid";
-import { Canvas } from "../../types/Canvas";
 import { GridMap } from "../../types/GridMap";
 
 /**
  * A canvas adapter that extracts the image data to create a 2d grid.
  */
 export default class CanvasGridAdapter {
-    static getGridMapFromCanvas(canvas: Canvas): GridMap {
-        const context = canvas.getContext("2d");
-
-        const { data, width, height } = context.getImageData(0, 0, canvas.width, canvas.height);
+    static getGridMapFromImageData(imageData: ImageData): GridMap {
+        const { data, width, height } = imageData;
 
         const rows: GridMap = [];
 
@@ -29,7 +26,7 @@ export default class CanvasGridAdapter {
         return rows;
     };
 
-    static getGridFromCanvas(canvas: Canvas): TerrainGrid {
-        return new TerrainGrid(this.getGridMapFromCanvas(canvas));
+    static getGridFromImageData(imageData: ImageData): TerrainGrid {
+        return new TerrainGrid(this.getGridMapFromImageData(imageData));
     };
 };

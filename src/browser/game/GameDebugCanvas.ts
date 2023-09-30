@@ -1,10 +1,10 @@
 import { Point } from "../../types/Point";
-import TerrainGridRenderer from "../../core/grid/GridRenderer";
 import TerrainTileRenderer from "../../core/terrain/renderers/TerrainTileRenderer";
 import GameCanvasMouseEvents from "./events/GameCanvasMouseEvents";
 import { CanvasRenderingContext2D } from "canvas";
 import TerrainTileKit from "../../core/terrain/TerrainTileKit";
 import { TerrainTileType } from "../../core/terrain/types/TerrainTileType";
+import { Canvas2DContext } from "../../types/Canvas2DContext";
 
 export default class GameDebugCanvas {
     public readonly element = document.createElement("canvas");
@@ -33,7 +33,7 @@ export default class GameDebugCanvas {
         this.offset.left = this.mouseEvents.offset.left + -1300;
         this.offset.top = this.mouseEvents.offset.top;
 
-        const context = this.element.getContext("2d")! as unknown as CanvasRenderingContext2D;
+        const context = this.element.getContext("2d") as Canvas2DContext;
 
         const terrainTileRenderer = new TerrainTileRenderer(this.size);
         const terrainTileKit = new TerrainTileKit(terrainTileRenderer);

@@ -1,12 +1,11 @@
-import { createCanvas } from "canvas";
-import { Canvas } from "../../types/Canvas";
+import { ImageData, createCanvas } from "canvas";
 import { CanvasPaths } from "./types/CanvasPaths";
 
 /**
  * A Path2D adapter to convert paths to a canvas, to extract image data.
  */
 export default class CanvasPathsAdapter {
-    static getCanvasFromPaths(canvasPaths: CanvasPaths): Canvas {
+    static getCanvasFromPaths(canvasPaths: CanvasPaths): ImageData {
         if(!canvasPaths.bounds)
             throw new Error("There's no bounds in the canvas paths!");
 
@@ -15,6 +14,9 @@ export default class CanvasPathsAdapter {
 
         const canvas = createCanvas(width, height);
         const context = canvas.getContext("2d");
+
+        if(!context)
+            throw new Error("Cannot get context for canvas paths adapter!");
 
         context.strokeStyle = context.fillStyle = "white";
 
@@ -33,7 +35,6 @@ export default class CanvasPathsAdapter {
             context.fill();
         }
 
-        return canvas;
+        return context.getImageData(0, 0, canvas.width, canvas.height);
     };
-
 }

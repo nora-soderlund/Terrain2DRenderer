@@ -13,8 +13,6 @@ export default class TerrainGrid {
     public readonly columns: number;
 
     constructor(private readonly map: GridMap, private readonly options?: TerrainGridOptions) {
-        console.time("TerrainGrid");
-
         for(let row = 0; row < map.length; row++) {
             this.map[row].unshift(0);
             this.map[row].push(0);            
@@ -62,8 +60,6 @@ export default class TerrainGrid {
 
         this.rows = this.map.length;
         this.columns = Math.max(...this.map.map((row) => row.length));
-
-        console.timeEnd("TerrainGrid");
     }
 
     private offsetsByDirection = {

@@ -15,14 +15,12 @@ export default class TerrainTiles {
     public readonly definitions: TerrainTileDefinition[];
 
     constructor(public readonly grid: TerrainGrid, private readonly options?: TerrainTilesOptions) {
-        console.time("TerrainTiles");
-        
         this.definitions = this.getTiles();
-
-        console.timeEnd("TerrainTiles");
     }
 
     private getTiles() {
+        const timestamp = performance.now();
+
         const tiles: TerrainTileDefinition[] = [];
 
         for(let row = 0; row < this.grid.rows; row++)
@@ -76,6 +74,11 @@ export default class TerrainTiles {
                 }
             }
         }
+
+        const elapsed = Math.round(performance.now() - timestamp);
+
+        if(elapsed > 50)
+            console.warn(`Terrain tiles definitions took ${elapsed}ms (${this.grid.rows} row, ${this.grid.columns} columns; ${this.grid.rows * this.grid.columns} tiles)`);
 
         return tiles;
     }

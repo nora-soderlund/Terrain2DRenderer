@@ -1,29 +1,29 @@
-import { Canvas, CanvasRenderingContext2D, createCanvas } from "canvas";
 import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
 import { TerrainTileType } from "./types/TerrainTileType";
 import { Direction } from "../../types/Direction";
-import { MercatorCoordinates } from "../../browser/game/mercator/types/MercatorCoordinates";
 import { MercatorPixelCoordinates } from "../../browser/game/mercator/types/MercatorPixelCoordinates";
+import createOffScreenCanvas, { CanvasInstance, OffScreenCanvasInstance } from "../../utils/Canvas";
+import { Canvas2DContext } from "../../types/Canvas2DContext";
 
 export default class TerrainTileKit {
-    public readonly flatTile: Canvas;
+    public readonly flatTile: OffScreenCanvasInstance;
     
-    public readonly flatTileWithLeftFlatEdge: Canvas;
-    public readonly flatTileWithRightFlatEdge: Canvas;
+    public readonly flatTileWithLeftFlatEdge: OffScreenCanvasInstance;
+    public readonly flatTileWithRightFlatEdge: OffScreenCanvasInstance;
     
-    public readonly flatTileWithLeftInsideCornerEdge: Canvas;
-    public readonly flatTileWithRightInsideCornerEdge: Canvas;
+    public readonly flatTileWithLeftInsideCornerEdge: OffScreenCanvasInstance;
+    public readonly flatTileWithRightInsideCornerEdge: OffScreenCanvasInstance;
     
-    public readonly flatTileWithLeftOutsideCornerEdge: Canvas;
-    public readonly flatTileWithRightOutsideCornerEdge: Canvas;
+    public readonly flatTileWithLeftOutsideCornerEdge: OffScreenCanvasInstance;
+    public readonly flatTileWithRightOutsideCornerEdge: OffScreenCanvasInstance;
     
-    public readonly slopedTile: Canvas;
+    public readonly slopedTile: OffScreenCanvasInstance;
     
-    public readonly slopedTileWithLeftFlatEdge: Canvas;
-    public readonly slopedTileWithRightFlatEdge: Canvas;
+    public readonly slopedTileWithLeftFlatEdge: OffScreenCanvasInstance;
+    public readonly slopedTileWithRightFlatEdge: OffScreenCanvasInstance;
 
-    public readonly slopedTileWithRightOutsideCornerEdge: Canvas;
-    public readonly slopedTileWithLeftOutsideCornerEdge: Canvas;
+    public readonly slopedTileWithRightOutsideCornerEdge: OffScreenCanvasInstance;
+    public readonly slopedTileWithLeftOutsideCornerEdge: OffScreenCanvasInstance;
 
     private readonly halfSize: number;
 
@@ -51,7 +51,7 @@ export default class TerrainTileKit {
     };
 
     // TODO: remove MercatorCoordinate
-    public draw(context: CanvasRenderingContext2D, offset: MercatorPixelCoordinates, type: TerrainTileType, row: number, column: number, direction: Direction) {
+    public draw(context: Canvas2DContext, offset: MercatorPixelCoordinates, type: TerrainTileType, row: number, column: number, direction: Direction) {
         let left = column * this.terrainTileRenderer.size;
         let top = row * this.terrainTileRenderer.size;
 
@@ -162,7 +162,7 @@ export default class TerrainTileKit {
         const width = this.terrainTileRenderer.size * 3;
         const height = width;
 
-        return createCanvas(width, height);
+        return createOffScreenCanvas(width, height);
     };
 
     private createFlatTile() {
@@ -176,7 +176,7 @@ export default class TerrainTileKit {
 
     private createFlatTileWithLeftFlatEdge() {
         const canvas = this.createTileCanvas();
-        const context = canvas.getContext("2d");
+        const context = canvas.getContext("2d")!;
 
         this.terrainTileRenderer.drawFlatTileWithLeftFlatEdge(context, 1, 1);
 

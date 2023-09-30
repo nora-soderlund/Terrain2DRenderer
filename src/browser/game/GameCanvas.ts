@@ -45,7 +45,10 @@ export default class GameCanvas implements GameCanvasInterface {
         //this.offset.left =  - Math.floor((this.tiles.grid.columns * this.size) / 2);
         //this.offset.top =  - Math.floor((this.tiles.grid.rows * this.size) / 2);
 
-        const context = this.canvas.getContext("2d")!;
+        const context = this.canvas.getContext("2d");
+
+        if(!context)
+            return this.requestRender();
 
         for(let canvasEntity of this.entities) {
             context.save();

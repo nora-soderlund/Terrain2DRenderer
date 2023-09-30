@@ -16,13 +16,14 @@ import MercatorAdapter from "./adapters/mercator/MercatorAdapter";
 import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGameCanvasEntity";
 import TerrainTileKit from "./core/terrain/TerrainTileKit";
 import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
+import { Canvas2DContext } from "./types/Canvas2DContext";
 
 (async () => {
   {
     const response = await fetch("../assets/datahub/countries/countries.geojson");
     const result = await response.json();
 
-    const zoomLevel = 2;
+    const zoomLevel = 3;
     const tileSize = 10;
 
     const time = performance.now();
@@ -33,7 +34,7 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
     //const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
     const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
 
-    const countries = [ "Russia", "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine", "Netherlands" ];
+    const countries = [ "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine", "Netherlands" ];
     //const countries = result.features.slice(1, 12).map((feature: any) => feature.properties["ADMIN"]);
 
     console.log({ countries });
@@ -48,8 +49,6 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
 
     async function createWorker(worker: Worker) {
       if(!countries.length) {
-        console.log("Termianting worker, no longer needed.");
-
         worker.terminate();
 
         return;
@@ -57,15 +56,11 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
 
       const country = countries.splice(0, 1)[0];
 
-      console.log("Resuing worker for " + country + ".");
-
       const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === country);
-
-      console.debug(feature.properties["ADMIN"]);
 
       const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 2);
 
-      const terrainTiles = await new Promise<TerrainTiles>((resolve) => {
+      const terrainCanvas = await new Promise<TerrainCanvas>((resolve) => {
         function callback(event: MessageEvent) {
           worker.removeEventListener("message", callback);
 
@@ -73,13 +68,14 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
         };
 
         worker.addEventListener("message", callback);
-        worker.postMessage(mercatorGrid.map);
+        worker.postMessage({
+          map: mercatorGrid.map,
+          country,
+          tileSize
+        });
       });
 
-      console.log(country);
 
-      const terrainCanvas = new TerrainCanvas(terrainTileKit, terrainTiles, tileSize, false);
-      
       const gameTerrainEntity = new MercatorGameTerrainEntity(terrainCanvas, mercatorGrid.coordinate);
 
       entities.push(gameTerrainEntity);
@@ -147,7 +143,7 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
 
   {
     const debugCanvas = document.createElement("canvas");
-    DebugCanvas.render(debugCanvas.getContext("2d") as unknown as CanvasRenderingContext2D, 100);
+    DebugCanvas.render(debugCanvas.getContext("2d") as Canvas2DContext, 100);
     debugCanvas.style.width = debugCanvas.style.height = "auto";
     document.body.append(debugCanvas);
   }

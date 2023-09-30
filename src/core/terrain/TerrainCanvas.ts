@@ -1,10 +1,7 @@
-import { Canvas } from "../../types/Canvas";
-import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
 import TerrainTiles from "./TerrainTiles";
-import { createCanvas } from "canvas";
 import { TerrainCanvasPart } from "./types/TerrainCanvasPart";
-import { TerrainTileType } from "./types/TerrainTileType";
 import TerrainTileKit from "./TerrainTileKit";
+import createOffScreenCanvas from "../../utils/Canvas";
 
 /**
  * A canvas renderer that combines the visualiztion logic.
@@ -17,9 +14,9 @@ export default class TerrainCanvas {
     };
 
     private render() {
-        this.parts.length = 0;
+        const timestamp = performance.now();
 
-        console.time("TerrainCanvas");
+        this.parts.length = 0;
 
         const widthPerPart = Math.floor(2000 / this.size);
         const heightPerPart = Math.floor(2000 / this.size);
@@ -29,7 +26,7 @@ export default class TerrainCanvas {
             const width = Math.min(this.tiles.grid.columns - column, widthPerPart) + 2;
             const height = Math.min(this.tiles.grid.rows - row, heightPerPart) + 2;
 
-            const canvas = createCanvas(width * this.size, height * this.size);
+            const canvas = createOffScreenCanvas(width * this.size, height * this.size);
             const context = canvas.getContext("2d")!;
 
             const offset = {
@@ -63,10 +60,11 @@ export default class TerrainCanvas {
                 height
             });
         }
+        
+        const elapsed = Math.round(performance.now() - timestamp);
 
-        console.timeEnd("TerrainCanvas");
-
-        console.debug(`${this.parts.length} parts were created`);
+        if(elapsed > 50)
+            console.warn(`Terrain canvas render took ${elapsed}ms (${this.parts.length} parts)`);
 
         return this.parts;
     };

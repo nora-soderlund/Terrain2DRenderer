@@ -1,18 +1,41 @@
+import TerrainCanvas from "./core/terrain/TerrainCanvas";
 import TerrainGrid from "./core/terrain/TerrainGrid";
+import TerrainTileKit from "./core/terrain/TerrainTileKit";
 import TerrainTiles from "./core/terrain/TerrainTiles";
+import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
+
+declare var self: ServiceWorkerGlobalScope;
 
 onmessage = function(event) {
-    console.log('Worker: Message received from main script');
+    const { map, country, tileSize } = event.data;
 
-    console.time("Worker");
+    const terrainTileRenderer = new TerrainTileRenderer(tileSize);
+    const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
 
-    const testTerrainGrid = new TerrainGrid(event.data, {
+    console.time(country);
+
+    const testTerrainGrid = new TerrainGrid(map, {
         ignoreSlopes: true
     });
     
-    const terrainTiles = new TerrainTiles(testTerrainGrid);
+    const terrainTiles = new TerrainTiles(testTerrainGrid, {
+        ignoreSlopes: true
+    });
 
-    console.timeEnd("Worker");
+    const terrainCanvas = new TerrainCanvas(terrainTileKit, terrainTiles, tileSize, false);
 
-    this.postMessage(terrainTiles);
+    console.timeEnd(country);
+
+    const result = {
+        parts: terrainCanvas.parts.map((part) => {
+            return {
+                ...part,
+                canvas: (part.canvas as OffscreenCanvas).transferToImageBitmap()
+            };
+        }),
+        size: terrainCanvas.size
+    };
+
+
+    postMessage(result, result.parts.map((part) => part.canvas));
 }
