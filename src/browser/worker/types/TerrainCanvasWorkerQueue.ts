@@ -10,5 +10,7 @@ export type TerrainCanvasWorkerQueue = {
     width: number;
     height: number;
 
+    tileSize: number;
+
     callback: (image: ImageBitmap) => void;
 };

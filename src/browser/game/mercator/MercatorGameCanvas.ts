@@ -4,14 +4,19 @@ import GameCanvasInterface from "../types/GameCanvasInterface";
 import MercatorProjection from "../../../adapters/mercator/MercatorProjection";
 import { MercatorCoordinates } from "./types/MercatorCoordinates";
 import { MercatorPixelCoordinates } from "./types/MercatorPixelCoordinates";
+import GameCanvasEvents from "../events/GameCanvasEvents";
+import { Point } from "../../../types/Point";
 
 export default class MercatorGameCanvas implements GameCanvasInterface {
     public readonly element = document.createElement("div");
     public readonly canvas = document.createElement("canvas");
     private readonly slider = document.createElement("input");
 
+    public readonly events = new GameCanvasEvents();
     private readonly mouseEvents = new TerrainCanvasMouseEvents(this.canvas);
     private readonly entities: MercatorGameCanvasEntity[] = [];
+
+    private tileSize: number;
 
     public readonly offset = {
         left: 0,
@@ -24,6 +29,8 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
     };
 
     constructor(public size: number, private readonly zoomLevel: number) {
+        this.tileSize = size;
+
         this.element.classList.add("game");
         this.element.append(this.canvas);
 
@@ -39,12 +46,23 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
             this.worldCoordinatesOffset.left *= value / this.size;
             this.worldCoordinatesOffset.top *= value / this.size;
 
-            this.size = value;
+            this.setSize(value);
         })
 
         this.element.append(this.slider);
 
         this.requestRender();
+    };
+
+    public setSize(size: number) {
+        const event = {
+            previousTileSize: this.size,
+            newTileSize: size
+        };
+
+        this.tileSize = this.size = size;
+
+        this.events.emit("TileSizeChanged", event);
     };
 
     public setCoordinates(coordinates: MercatorCoordinates) {
@@ -65,6 +83,22 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
         window.requestAnimationFrame(this.render.bind(this));
     };
 
+    public isCoordinateInView(offset: Point, left: number, top: number, width: number, height: number) {
+        if(offset.left + left + width < 0)
+            return false;
+
+        if(offset.left + left > this.canvas.width)
+            return false;
+
+        if(offset.top + top + height < 0)
+            return false;
+
+        if(offset.top + top > this.canvas.height)
+            return false;
+
+        return true;
+    };
+
     public render() {
         const bounds = this.element.getBoundingClientRect();
 
@@ -82,8 +116,10 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
         for(let canvasEntity of this.entities) {
             context.save();
 
-            context.translate(this.offset.left, this.offset.top);
-            context.translate(canvasEntity.column * this.size, canvasEntity.row * this.size);
+            const offset: Point = {
+                left: this.offset.left + (canvasEntity.column * this.size),
+                top: this.offset.top + (canvasEntity.row * this.size)
+            };
 
             if(canvasEntity.coordinates) {
                 if(!canvasEntity.pixelCoordinates) {
@@ -92,10 +128,13 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
                     canvasEntity.pixelCoordinates = MercatorProjection.getPixelCoordinates(this.zoomLevel, worldCoordinates);
                 }
 
-                context.translate(canvasEntity.pixelCoordinates.left * this.size, canvasEntity.pixelCoordinates.top * this.size);
+                offset.left += canvasEntity.pixelCoordinates.left * this.size;
+                offset.top += canvasEntity.pixelCoordinates.top * this.size;
             }
 
-            canvasEntity.draw(this, context);
+            context.translate(offset.left, offset.top);
+
+            canvasEntity.draw(this, context, offset);
 
             context.restore();
         }

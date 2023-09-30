@@ -1,7 +1,5 @@
 import TerrainTiles from "./TerrainTiles";
 import { TerrainCanvasPart } from "./types/TerrainCanvasPart";
-import TerrainTileKit from "./TerrainTileKit";
-import createOffScreenCanvas from "../../utils/Canvas";
 
 /**
  * A canvas renderer that combines the visualiztion logic.

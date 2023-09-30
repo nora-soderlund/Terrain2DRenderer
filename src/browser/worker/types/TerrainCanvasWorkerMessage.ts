@@ -4,12 +4,6 @@ import { TerrainCanvasWorkerQueue } from "./TerrainCanvasWorkerQueue";
 
 export type TerrainCanvasWorkerMessage = 
     {
-        type: "INITIALIZE",
-        payload: {
-            tileSize: number;
-        }
-    } |
-    {
         type: "READY"
     } |
     {
@@ -22,6 +16,8 @@ export type TerrainCanvasWorkerMessage =
 
             width: number;
             height: number;
+
+            tileSize: number;
         }
     } |
     {

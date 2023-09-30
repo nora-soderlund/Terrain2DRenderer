@@ -7,24 +7,17 @@ export default class TerrainCanvasWorkerPool {
     private readonly workers: TerrainCanvasWorkerInstance[] = [];
     private readonly queue: TerrainCanvasWorkerQueue[] = [];
 
-    constructor(private readonly tileSize: number, private readonly maximumWorkers: number = navigator.hardwareConcurrency) {
+    constructor(private readonly maximumWorkers: number = navigator.hardwareConcurrency) {
 
     }
 
     private createWorkerInstance() {
         const instance: TerrainCanvasWorkerInstance = {
             worker: new Worker("../dist/worker.js"),
-            status: "CREATED"
+            status: "READY"
         };
 
         instance.worker.addEventListener("message", (event) => this.handleWorkerMessage(instance, event));
-
-        instance.worker.postMessage({
-            type: "INITIALIZE",
-            payload: { 
-                tileSize: this.tileSize
-            }
-        });
 
         this.workers.push(instance);
     };
@@ -70,13 +63,15 @@ export default class TerrainCanvasWorkerPool {
                     column: queue.column,
 
                     width: queue.width,
-                    height: queue.height
+                    height: queue.height,
+
+                    tileSize: queue.tileSize
                 }
             });
         }
     };
 
-    async getCanvasPart(terrainTiles: TerrainTiles, row: number, column: number, width: number, height: number) {
+    async getCanvasPart(terrainTiles: TerrainTiles, row: number, column: number, width: number, height: number, tileSize: number) {
         return new Promise<ImageBitmap>((resolve) => {
             const definitions = terrainTiles.definitions.filter((definition) => {
                 if(definition.row < row || definition.row > row + height)
@@ -96,6 +91,8 @@ export default class TerrainCanvasWorkerPool {
                 
                 width,
                 height,
+
+                tileSize,
 
                 callback: resolve
             });

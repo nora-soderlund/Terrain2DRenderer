@@ -5,29 +5,29 @@ import { TerrainCanvasWorkerMessage } from "./types/TerrainCanvasWorkerMessage";
 
 declare var self: ServiceWorkerGlobalScope;
 
-let terrainTileRenderer: TerrainTileRenderer;
-let terrainTileKit: TerrainTileKit;
+const terrainTileKits: Map<number, TerrainTileKit> = new Map();
 
 onmessage = function(event: MessageEvent<TerrainCanvasWorkerMessage>) {
     const { type } = event.data;
 
-    if(type === "INITIALIZE") {
-        const { tileSize } = event.data.payload;
+    if(type === "RENDER") {
+        const { definitions, row, column, width, height, tileSize } = event.data.payload;
 
-        terrainTileRenderer = new TerrainTileRenderer(tileSize);
-        terrainTileKit = new TerrainTileKit(terrainTileRenderer);
+        if(!terrainTileKits.has(tileSize)) {
+            const terrainTileRenderer = new TerrainTileRenderer(tileSize);
+            const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
 
-        postMessage({ type: "READY" });
-    }
-    else if(type === "RENDER") {
-        const { definitions, row, column, width, height } = event.data.payload;
+            terrainTileKits.set(tileSize, terrainTileKit);
+        }
 
-        const canvas = new OffscreenCanvas(width * terrainTileRenderer.size, height * terrainTileRenderer.size);
+        const terrainTileKit = terrainTileKits.get(tileSize)!;
+
+        const canvas = new OffscreenCanvas(width * tileSize, height * tileSize);
         const context = canvas.getContext("2d")!;
 
         const offset = {
-            left: -((column - 1) * terrainTileRenderer.size),
-            top: -((row - 1) * terrainTileRenderer.size)
+            left: -((column - 1) * tileSize),
+            top: -((row - 1) * tileSize)
         };
 
         for(let tileDefinition of definitions) {
@@ -44,3 +44,7 @@ onmessage = function(event: MessageEvent<TerrainCanvasWorkerMessage>) {
         postMessage(message, [ message.payload.image ]);
     }
 }
+
+postMessage({
+    type: "READY"
+});
