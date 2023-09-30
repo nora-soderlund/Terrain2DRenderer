@@ -113,32 +113,38 @@ export default class TerrainTileKit {
             }
             
             case TerrainTileType.SlopedTile: {
-                context.rotate((Math.PI / 180) * -45);
-
                 context.drawImage(this.slopedTile, centerOffset, centerOffset);
 
                 break;
             }
             
             case TerrainTileType.SlopedTileWithLeftFlatEdge: {
+                context.rotate((Math.PI / 180) * 45);
+
                 context.drawImage(this.slopedTileWithLeftFlatEdge, centerOffset, centerOffset);
 
                 break;
             }
             
             case TerrainTileType.SlopedTileWithRightFlatEdge: {
+                context.rotate((Math.PI / 180) * 45);
+
                 context.drawImage(this.slopedTileWithRightFlatEdge, centerOffset, centerOffset);
 
                 break;
             }
             
             case TerrainTileType.SlopedTileWithRightOutsideCornerEdge: {
+                context.rotate((Math.PI / 180) * 45);
+
                 context.drawImage(this.slopedTileWithRightOutsideCornerEdge, centerOffset, centerOffset);
 
                 break;
             }
             
             case TerrainTileType.SlopedTileWithLeftOutsideCornerEdge: {
+                context.rotate((Math.PI / 180) * 45);
+                
                 context.drawImage(this.slopedTileWithLeftOutsideCornerEdge, centerOffset, centerOffset);
 
                 break;

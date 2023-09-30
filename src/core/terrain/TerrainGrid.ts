@@ -1,6 +1,10 @@
 import { Direction } from "../../types/Direction";
 import { GridMap } from "../../types/GridMap";
 
+export type TerrainGridOptions = {
+    ignoreSlopes?: boolean;
+}
+
 /**
  * A data class that provides the 2d terrain logic.
  */
@@ -8,7 +12,7 @@ export default class TerrainGrid {
     public readonly rows: number;
     public readonly columns: number;
 
-    constructor(private readonly map: GridMap) {
+    constructor(private readonly map: GridMap, private readonly options?: TerrainGridOptions) {
         console.time("TerrainGrid");
 
         for(let row = 0; row < map.length; row++) {
@@ -19,38 +23,40 @@ export default class TerrainGrid {
         this.map.unshift([]);
         this.map.push([]);
 
-        for(let row = 0; row < this.map.length; row++)
-        for(let column = 0; column < this.map[row].length; column++) {
-            if(!this.isTileWater(row, column))
-                continue;
-
-            const squareTiles = [
-                this.isTileByDirectionWater(row, column, Direction.East),
-                this.isTileByDirectionWater(row, column, Direction.South),
-                this.isTileByDirectionWater(row, column, Direction.West),
-                this.isTileByDirectionWater(row, column, Direction.North)
-            ];
-
-            if(squareTiles.every((item) => item === squareTiles[0]))
-                continue;
-
-            for(let direction = 0; direction < 360; direction += 90) {
-                if(this.isTileByDirectionFlat(row, column, direction + Direction.East))
+        if(!this.options?.ignoreSlopes) {
+            for(let row = 0; row < this.map.length; row++)
+            for(let column = 0; column < this.map[row].length; column++) {
+                if(!this.isTileWater(row, column))
                     continue;
 
-                if(!this.isTileByDirectionFlat(row, column, direction + Direction.South))
+                const squareTiles = [
+                    this.isTileByDirectionWater(row, column, Direction.East),
+                    this.isTileByDirectionWater(row, column, Direction.South),
+                    this.isTileByDirectionWater(row, column, Direction.West),
+                    this.isTileByDirectionWater(row, column, Direction.North)
+                ];
+
+                if(squareTiles.filter((item) => item === squareTiles[0]).length !== 2)
                     continue;
 
-                if(!this.isTileByDirectionFlat(row, column, direction + Direction.West))
-                    continue;
+                for(let direction = 0; direction < 360; direction += 90) {
+                    if(this.isTileByDirectionFlat(row, column, direction + Direction.East))
+                        continue;
 
-                if(this.isTileByDirectionFlat(row, column, direction + Direction.North))
-                    continue;
-                
-                // values between 255 and 251 indicates a slope; 251 being a north-east slope and 255 a north-west slope
-                this.map[row][column] = 255 - (direction / 360 * 4);
+                    if(!this.isTileByDirectionFlat(row, column, direction + Direction.South))
+                        continue;
 
-                break;
+                    if(!this.isTileByDirectionFlat(row, column, direction + Direction.West))
+                        continue;
+
+                    if(this.isTileByDirectionFlat(row, column, direction + Direction.North))
+                        continue;
+                    
+                    // values between 255 and 251 indicates a slope; 251 being a north-east slope and 255 a north-west slope
+                    this.map[row][column] = 255 - (direction / 360 * 4);
+
+                    break;
+                }
             }
         }
 

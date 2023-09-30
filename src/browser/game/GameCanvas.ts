@@ -3,8 +3,10 @@ import GameCanvasEntity from "./types/GameCanvasEntity";
 import GameCanvasInterface from "./types/GameCanvasInterface";
 
 export default class GameCanvas implements GameCanvasInterface {
-    public readonly element = document.createElement("canvas");
-    private readonly mouseEvents = new TerrainCanvasMouseEvents(this.element);
+    public readonly element = document.createElement("div");
+    public readonly canvas = document.createElement("canvas");
+
+    private readonly mouseEvents = new TerrainCanvasMouseEvents(this.canvas);
     private readonly entities: GameCanvasEntity[] = [];
 
     public readonly offset = {
@@ -13,6 +15,9 @@ export default class GameCanvas implements GameCanvasInterface {
     };
 
     constructor(entities: GameCanvasEntity[], public readonly size: number) {
+        this.element.classList.add("game");
+        this.element.append(this.canvas);
+
         this.addEntities(entities);
         
         this.requestRender();
@@ -31,8 +36,8 @@ export default class GameCanvas implements GameCanvasInterface {
     public render() {
         const bounds = this.element.getBoundingClientRect();
 
-        this.element.width = bounds.width;
-        this.element.height = bounds.height;
+        this.canvas.width = bounds.width;
+        this.canvas.height = bounds.height;
 
         this.offset.left = this.mouseEvents.offset.left;
         this.offset.top = this.mouseEvents.offset.top;
@@ -40,7 +45,7 @@ export default class GameCanvas implements GameCanvasInterface {
         //this.offset.left =  - Math.floor((this.tiles.grid.columns * this.size) / 2);
         //this.offset.top =  - Math.floor((this.tiles.grid.rows * this.size) / 2);
 
-        const context = this.element.getContext("2d")!;
+        const context = this.canvas.getContext("2d")!;
 
         for(let canvasEntity of this.entities) {
             context.save();

@@ -22,7 +22,7 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
     const response = await fetch("../assets/datahub/countries/countries.geojson");
     const result = await response.json();
 
-    const zoomLevel = 3;
+    const zoomLevel = 2;
     const tileSize = 10;
 
     const time = performance.now();
@@ -30,26 +30,66 @@ import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
     const entities: MercatorGameCanvasEntity[] = [];
 
     const terrainTileRenderer = new TerrainTileRenderer(tileSize);
+    //const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
     const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
 
+    const countries = [ "Russia", "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine", "Netherlands" ];
+    //const countries = result.features.slice(1, 12).map((feature: any) => feature.properties["ADMIN"]);
+
+    console.log({ countries });
 
     //for(let feature of result.features.slice(0, 10)) {
-    for(let country of [ "Russia" ]) {
-    //for(let country of [ "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine" ]) {
+    //for(let country of [ "Russia" ]) {
+    let workers: Worker[] = [];
+    let maxWorkers = navigator.hardwareConcurrency || 4;
+
+    for(let index = 0; index < maxWorkers; index++)
+      workers.push(new Worker("../dist/worker.js"));
+
+    async function createWorker(worker: Worker) {
+      if(!countries.length) {
+        console.log("Termianting worker, no longer needed.");
+
+        worker.terminate();
+
+        return;
+      }
+
+      const country = countries.splice(0, 1)[0];
+
+      console.log("Resuing worker for " + country + ".");
+
       const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === country);
 
       console.debug(feature.properties["ADMIN"]);
 
       const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 2);
-      const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
-      
-      const terrainTiles = new TerrainTiles(testTerrainGrid);
+
+      const terrainTiles = await new Promise<TerrainTiles>((resolve) => {
+        function callback(event: MessageEvent) {
+          worker.removeEventListener("message", callback);
+
+          resolve(event.data);
+        };
+
+        worker.addEventListener("message", callback);
+        worker.postMessage(mercatorGrid.map);
+      });
+
+      console.log(country);
 
       const terrainCanvas = new TerrainCanvas(terrainTileKit, terrainTiles, tileSize, false);
+      
       const gameTerrainEntity = new MercatorGameTerrainEntity(terrainCanvas, mercatorGrid.coordinate);
 
       entities.push(gameTerrainEntity);
-    }
+
+      return createWorker(worker);
+    };
+
+    await Promise.all(workers.map(async (worker) => {
+      return await createWorker(worker);
+    }));
 
     const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
     const gameGridEntity = new GameGridEntity(new GridCanvas());

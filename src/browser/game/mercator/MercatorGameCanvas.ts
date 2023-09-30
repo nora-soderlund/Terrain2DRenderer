@@ -6,8 +6,11 @@ import { MercatorCoordinates } from "./types/MercatorCoordinates";
 import { MercatorPixelCoordinates } from "./types/MercatorPixelCoordinates";
 
 export default class MercatorGameCanvas implements GameCanvasInterface {
-    public readonly element = document.createElement("canvas");
-    private readonly mouseEvents = new TerrainCanvasMouseEvents(this.element);
+    public readonly element = document.createElement("div");
+    public readonly canvas = document.createElement("canvas");
+    private readonly slider = document.createElement("input");
+
+    private readonly mouseEvents = new TerrainCanvasMouseEvents(this.canvas);
     private readonly entities: MercatorGameCanvasEntity[] = [];
 
     public readonly offset = {
@@ -21,6 +24,9 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
     };
 
     constructor(entities: MercatorGameCanvasEntity[] = [], public readonly size: number, private readonly zoomLevel: number) {
+        this.element.classList.add("game");
+        this.element.append(this.canvas);
+
         if(entities.length)
             this.addEntities(entities);
 
@@ -48,8 +54,8 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
     public render() {
         const bounds = this.element.getBoundingClientRect();
 
-        this.element.width = bounds.width;
-        this.element.height = bounds.height;
+        this.canvas.width = bounds.width;
+        this.canvas.height = bounds.height;
 
         this.offset.left = this.mouseEvents.offset.left + this.worldCoordinatesOffset.left;
         this.offset.top = this.mouseEvents.offset.top + this.worldCoordinatesOffset.top;
@@ -57,7 +63,7 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
         //this.offset.left =  - Math.floor((this.tiles.grid.columns * this.size) / 2);
         //this.offset.top =  - Math.floor((this.tiles.grid.rows * this.size) / 2);
 
-        const context = this.element.getContext("2d")!;
+        const context = this.canvas.getContext("2d")!;
 
         for(let canvasEntity of this.entities) {
             context.save();

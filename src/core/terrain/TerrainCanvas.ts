@@ -3,8 +3,8 @@ import TerrainTileRenderer from "./renderers/TerrainTileRenderer";
 import TerrainTiles from "./TerrainTiles";
 import { createCanvas } from "canvas";
 import { TerrainCanvasPart } from "./types/TerrainCanvasPart";
-import TerrainTileKit from "./TerrainTileKit";
 import { TerrainTileType } from "./types/TerrainTileType";
+import TerrainTileKit from "./TerrainTileKit";
 
 /**
  * A canvas renderer that combines the visualiztion logic.
