@@ -17,6 +17,9 @@ import MercatorGameCanvasEntity from "./browser/game/mercator/types/MercatorGame
 import TerrainTileKit from "./core/terrain/TerrainTileKit";
 import TerrainTileRenderer from "./core/terrain/renderers/TerrainTileRenderer";
 import { Canvas2DContext } from "./types/Canvas2DContext";
+import TerrainCanvasWorkerPool from "./browser/worker/TerrainCanvasWorkerPool";
+import DataHubAdapter from "./adapters/datahub/DataHubAdapter";
+import { DataHubContinent } from "./adapters/datahub/types/DataHubContinent";
 
 (async () => {
   {
@@ -30,67 +33,38 @@ import { Canvas2DContext } from "./types/Canvas2DContext";
 
     const entities: MercatorGameCanvasEntity[] = [];
 
-    const terrainTileRenderer = new TerrainTileRenderer(tileSize);
-    //const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
-    const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
+    const mercatorGameCanvas = new MercatorGameCanvas(1, zoomLevel);
+    const terrainCanvasWorkerPool = new TerrainCanvasWorkerPool(tileSize);
 
-    const countries = [ "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine", "Netherlands" ];
+    //const countries = [ "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine", "Netherlands" ];
     //const countries = result.features.slice(1, 12).map((feature: any) => feature.properties["ADMIN"]);
+    const countries = DataHubAdapter.getCountriesByContinent(result, DataHubContinent.Europe);
 
-    console.log({ countries });
-
-    //for(let feature of result.features.slice(0, 10)) {
-    //for(let country of [ "Russia" ]) {
-    let workers: Worker[] = [];
-    let maxWorkers = navigator.hardwareConcurrency || 4;
-
-    for(let index = 0; index < maxWorkers; index++)
-      workers.push(new Worker("../dist/worker.js"));
-
-    async function createWorker(worker: Worker) {
-      if(!countries.length) {
-        worker.terminate();
-
-        return;
-      }
-
-      const country = countries.splice(0, 1)[0];
-
-      const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === country);
+    for(let feature of countries) {
+      const country = feature.properties?.["ADMIN"];
+      //const feature = result.features.find((feature: any) => feature.properties["ADMIN"] === country);
 
       const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 2);
 
-      const terrainCanvas = await new Promise<TerrainCanvas>((resolve) => {
-        function callback(event: MessageEvent) {
-          worker.removeEventListener("message", callback);
-
-          resolve(event.data);
-        };
-
-        worker.addEventListener("message", callback);
-        worker.postMessage({
-          map: mercatorGrid.map,
-          country,
-          tileSize
-        });
+      const testTerrainGrid = new TerrainGrid(mercatorGrid.map, {
+        ignoreSlopes: false
+      });
+      
+      const terrainTiles = new TerrainTiles(testTerrainGrid, {
+        ignoreSlopes: false
       });
 
+      const terrainCanvas = new TerrainCanvas(terrainTiles, tileSize);
 
-      const gameTerrainEntity = new MercatorGameTerrainEntity(terrainCanvas, mercatorGrid.coordinate);
+      const gameTerrainEntity = new MercatorGameTerrainEntity(terrainCanvas, mercatorGrid.coordinate, terrainCanvasWorkerPool);
 
       entities.push(gameTerrainEntity);
-
-      return createWorker(worker);
-    };
-
-    await Promise.all(workers.map(async (worker) => {
-      return await createWorker(worker);
-    }));
+    }
 
     const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
     const gameGridEntity = new GameGridEntity(new GridCanvas());
 
-    const mercatorGameCanvas = new MercatorGameCanvas(entities.concat(gameWaterEntity, gameGridEntity), 2, zoomLevel);
+    mercatorGameCanvas.addEntities(entities.concat(gameWaterEntity, gameGridEntity));
     mercatorGameCanvas.setCoordinates(entities[1].coordinates!);
 
     //const gameCanvas = new GameCanvas([ gameTerrainEntity, gameWaterEntity, gameGridEntity ], 10);
@@ -109,7 +83,7 @@ import { Canvas2DContext } from "./types/Canvas2DContext";
     const terrainTileRenderer = new TerrainTileRenderer(10);
     const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
 
-    const terrainCanvas = new TerrainCanvas(terrainTileKit, terrainTiles, 10, false);
+    const terrainCanvas = new TerrainCanvas(terrainTiles, 10);
   
     const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
     const gameWaterEntity = new GameWaterEntity(new WaterRenderer());
@@ -133,7 +107,7 @@ import { Canvas2DContext } from "./types/Canvas2DContext";
     const terrainTileKit = new TerrainTileKit(terrainTileRenderer);
     
     const terrainTiles = new TerrainTiles(testTerrainGrid);
-    const terrainCanvas = new TerrainCanvas(terrainTileKit, terrainTiles, 100, false);
+    const terrainCanvas = new TerrainCanvas(terrainTiles, 100);
     const gameTerrainEntity = new GameTerrainEntity(terrainCanvas);
 
     const gameCanvas = new GameCanvas([ gameTerrainEntity ], 100);

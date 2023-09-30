@@ -6,7 +6,7 @@ module.exports = {
   entry: "./src/index.ts",
   entry: {
     'client': './src/index.ts',
-    'worker': './src/worker.ts',
+    'worker': './src/browser/worker/TerrainCanvasWorker.ts',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

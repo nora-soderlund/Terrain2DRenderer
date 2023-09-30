@@ -23,7 +23,7 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
         top: 0
     };
 
-    constructor(entities: MercatorGameCanvasEntity[] = [], public size: number, private readonly zoomLevel: number) {
+    constructor(public size: number, private readonly zoomLevel: number) {
         this.element.classList.add("game");
         this.element.append(this.canvas);
 
@@ -43,9 +43,6 @@ export default class MercatorGameCanvas implements GameCanvasInterface {
         })
 
         this.element.append(this.slider);
-
-        if(entities.length)
-            this.addEntities(entities);
 
         this.requestRender();
     };

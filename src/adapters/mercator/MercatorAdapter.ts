@@ -15,8 +15,18 @@ export default class MercatorAdapter {
         if(!canvasPaths)
             throw new Error("Could not get paths from the GeoJSON object, unsupported type.");
 
-        if(!canvasPaths.bounds || !canvasPaths.northWest)
-            throw new Error("Cannot process the canvas paths from the GeoJSON without valid bounds.");
+        if(!canvasPaths.bounds || !canvasPaths.northWest) {
+            console.warn("Cannot process the canvas paths from the GeoJSON without valid bounds.");
+
+            return {
+                map: [],
+                zoomLevel,
+                coordinate: {
+                    latitude: 0,
+                    longitude: 0
+                }
+            };
+        }
 
         const canvas = CanvasPathsAdapter.getCanvasFromPaths(canvasPaths);
         const gridMap = CanvasGridAdapter.getGridMapFromImageData(canvas);
