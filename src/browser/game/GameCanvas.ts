@@ -56,7 +56,7 @@ export default class GameCanvas implements GameCanvasInterface {
             context.translate(this.offset.left, this.offset.top);
             context.translate(canvasEntity.column * this.size, canvasEntity.row * this.size);
 
-            canvasEntity.draw(this, context, { left: 0, top: 0 });
+            canvasEntity.draw(this, context);
 
             context.restore();
         }

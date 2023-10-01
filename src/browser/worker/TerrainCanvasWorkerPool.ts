@@ -73,18 +73,8 @@ export default class TerrainCanvasWorkerPool {
 
     async getCanvasPart(terrainTiles: TerrainTiles, row: number, column: number, width: number, height: number, tileSize: number) {
         return new Promise<ImageBitmap>((resolve) => {
-            const definitions = terrainTiles.definitions.filter((definition) => {
-                if(definition.row < row || definition.row > row + height)
-                    return false;
-                
-                if(definition.column < column || definition.column > column + width)
-                    return false;
-                
-                return true;
-            });
-
             this.queue.push({
-                definitions,
+                definitions: terrainTiles.definitions,
                 
                 row,
                 column,

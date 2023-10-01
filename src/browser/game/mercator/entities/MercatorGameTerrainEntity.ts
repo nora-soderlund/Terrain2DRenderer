@@ -25,6 +25,11 @@ export type MercatorGameTerrainEntityPart = {
 };
 
 export default class MercatorGameTerrainEntity implements MercatorGameCanvasEntity {
+    public offset: Point = {
+        left: 0,
+        top: 0
+    };
+
     public readonly row = 0;
     public readonly column = 0;
     public readonly priority = GameEntityPriority.Terrain;
@@ -33,6 +38,7 @@ export default class MercatorGameTerrainEntity implements MercatorGameCanvasEnti
     private targetTileSize: number;
    
     private readonly parts: MercatorGameTerrainEntityPart[] = [];
+    private readonly visibleParts: MercatorGameTerrainEntityPart[] = [];
 
     constructor(
         private readonly gameCanvas: MercatorGameCanvas,
@@ -58,15 +64,6 @@ export default class MercatorGameTerrainEntity implements MercatorGameCanvasEnti
             };
 
             this.parts.push(newEntityPart);
-
-            newEntityPart.status = "PROCESSING";
-
-            this.terrainCanvasWorkerPool.getCanvasPart(this.terrainCanvas.terrainTiles, part.row, part.column, part.width, part.height, newEntityPart.tileSize).then((image) => {
-                console.log("Part is ready");
-
-                newEntityPart.image = image;
-                newEntityPart.status = "READY";
-            });
         }
 
         this.gameCanvas.events.addListener("TileSizeChanged", this.handleTileSizeChange.bind(this));
@@ -81,10 +78,9 @@ export default class MercatorGameTerrainEntity implements MercatorGameCanvasEnti
     };
 
     private processTileSizeChange(part: MercatorGameTerrainEntityPart) {
-        if(part.tileSize === this.targetTileSize || part.status !== "READY")
-            return;
-
         part.status = "PROCESSING";
+
+        console.log("Processing");
         
         this.terrainCanvasWorkerPool.getCanvasPart(this.terrainCanvas.terrainTiles, part.row, part.column, part.width, part.height, this.targetTileSize).then((image) => {
             console.log("Part is updated");
@@ -95,23 +91,44 @@ export default class MercatorGameTerrainEntity implements MercatorGameCanvasEnti
         });
     }
 
-    public draw(gameCanvas: MercatorGameCanvas, context: CanvasRenderingContext2D, offset: Point): void {
+    public process(gameCanvas: MercatorGameCanvas): void {
+        this.visibleParts.length = 0;
+
         for(let part of this.parts) {
-            if(part.image) {
-                const left = part.column * gameCanvas.size;
-                const top = part.row * gameCanvas.size;
+            const left = part.column * gameCanvas.size;
+            const top = part.row * gameCanvas.size;
 
-                const scale = gameCanvas.size / part.tileSize;
+            const width = part.width * gameCanvas.size;
+            const height = part.height * gameCanvas.size;
                 
-                if(!gameCanvas.isCoordinateInView(offset, left, top, part.image.width * scale, part.image.height * scale))
-                    continue;
+            if(!gameCanvas.isCoordinateInView(this.offset, left, top, width, height))
+                continue;
 
-                if(part.tileSize !== this.targetTileSize)
+            if(part.status === "READY") {
+                if(part.tileSize !== this.targetTileSize) {
                     this.processTileSizeChange(part);
+                }
+            }
+            else if(part.status === "CREATED") {
+                this.processTileSizeChange(part);
+            }
 
+            this.visibleParts.push(part);
+        }
+    };
+
+    public draw(gameCanvas: MercatorGameCanvas, context: CanvasRenderingContext2D): void {
+        for(let part of this.visibleParts) {
+            const left = part.column * gameCanvas.size;
+            const top = part.row * gameCanvas.size;
+
+            const width = part.width * gameCanvas.size;
+            const height = part.height * gameCanvas.size;
+                
+            if(part.image) {
                 context.drawImage(part.image,
                     0, 0, part.image.width, part.image.height,
-                    left, top, part.image.width * scale, part.image.height * scale);
+                    left, top, width, height);
             }
         }
     };

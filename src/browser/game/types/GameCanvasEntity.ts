@@ -6,6 +6,9 @@ export default interface GameCanvasEntity {
     row: number;
     column: number;
     priority: GameEntityPriority;
+
+    offset: Point;
     
-    draw(gameCanvas: GameCanvasInterface, context: CanvasRenderingContext2D, offset: Point): void;
+    process?(gameCanvas: GameCanvasInterface): void;
+    draw(gameCanvas: GameCanvasInterface, context: CanvasRenderingContext2D): void;
 };

@@ -11,7 +11,17 @@ onmessage = function(event: MessageEvent<TerrainCanvasWorkerMessage>) {
     const { type } = event.data;
 
     if(type === "RENDER") {
-        const { definitions, row, column, width, height, tileSize } = event.data.payload;
+        let { definitions, row, column, width, height, tileSize } = event.data.payload;
+
+        definitions = definitions.filter((definition) => {
+            if(definition.row < row || definition.row > row + height)
+                return false;
+            
+            if(definition.column < column || definition.column > column + width)
+                return false;
+            
+            return true;
+        });
 
         if(!terrainTileKits.has(tileSize)) {
             const terrainTileRenderer = new TerrainTileRenderer(tileSize);

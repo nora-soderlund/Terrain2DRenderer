@@ -37,7 +37,7 @@ import { DataHubContinent } from "./adapters/datahub/types/DataHubContinent";
     const terrainCanvasWorkerPool = new TerrainCanvasWorkerPool(tileSize);
 
     const tileSizeSteps = [ 10, 50 ].reverse();
-    const tileSizePositions = [ 0, 20 ].reverse();
+    const tileSizePositions = [ 0, 15 ].reverse();
 
     //const countries = [ "Norway", "Sweden", "Denmark", "Finland", "Estonia", "Latvia", "Lithuania", "Poland", "Germany", "Ukraine", "Netherlands" ];
     //const countries = result.features.slice(1, 12).map((feature: any) => feature.properties["ADMIN"]);
@@ -49,13 +49,9 @@ import { DataHubContinent } from "./adapters/datahub/types/DataHubContinent";
 
       const mercatorGrid = MercatorAdapter.getMercatorGridMapFromGeoJson(feature, zoomLevel, 2);
 
-      const testTerrainGrid = new TerrainGrid(mercatorGrid.map, {
-        ignoreSlopes: false
-      });
+      const testTerrainGrid = new TerrainGrid(mercatorGrid.map);
       
-      const terrainTiles = new TerrainTiles(testTerrainGrid, {
-        ignoreSlopes: false
-      });
+      const terrainTiles = new TerrainTiles(testTerrainGrid);
 
       const terrainCanvas = new TerrainCanvas(terrainTiles, tileSize);
 

@@ -140,7 +140,7 @@ export default class TerrainTiles {
         if(!this.grid.isTileByDirectionWater(row, column, direction))
             return false;
         
-        if(!this.grid.isTileByDirectionWater(row, column, direction - Direction.NorthEast))
+        if(this.grid.isTileByDirectionFlat(row, column, direction - Direction.NorthEast))
             return false;
         
         if(!this.grid.isTileByDirectionWater(row, column, direction - Direction.East))
@@ -162,7 +162,7 @@ export default class TerrainTiles {
         if(!this.grid.isTileByDirectionWater(row, column, direction))
             return false;
         
-        if(!this.grid.isTileByDirectionWater(row, column, direction + Direction.NorthEast))
+        if(this.grid.isTileByDirectionFlat(row, column, direction + Direction.NorthEast))
             return false;
         
         if(!this.grid.isTileByDirectionWater(row, column, direction + Direction.East))
@@ -206,7 +206,7 @@ export default class TerrainTiles {
         if(!this.grid.isTileByDirectionWater(row, column, direction))
             return false;
         
-        if(this.grid.isTileByDirectionWater(row, column, direction + Direction.NorthEast))
+        if(!this.grid.isTileByDirectionFlat(row, column, direction + Direction.NorthEast))
             return false;
 
         return true;

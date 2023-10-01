@@ -14,8 +14,11 @@ export default class TerrainCanvas {
     private process() {
         this.parts.length = 0;
 
-        const widthPerPart = Math.floor(1000 / this.size);
-        const heightPerPart = Math.floor(1000 / this.size);
+        //const widthPerPart = Math.floor(1000 / this.size);
+        //const heightPerPart = Math.floor(1000 / this.size);
+
+        const widthPerPart = 100;
+        const heightPerPart = 100;
 
         for(let row = 0; row < this.terrainTiles.grid.rows; row += heightPerPart)
         for(let column = 0; column < this.terrainTiles.grid.columns; column += widthPerPart) {
